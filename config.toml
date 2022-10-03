@@ -1,4 +1,4 @@
-baseURL = "/"
+baseURL = "https://joowonlee.netlify.app/"
 theme = "hugo-apero"
 languageCode = "en"
 title = ""
@@ -33,7 +33,7 @@ enableEmoji = true
   description = ""
   favicon = ""
   logo = ""
-  mainSections = ["Research", "Causal Inference"]
+  mainSections = ["Causal Inference"]
   navallcaps = true
   # show/hide social icons in site header & footer
   # configure social icons and links below in [[params.social]]
@@ -41,7 +41,7 @@ enableEmoji = true
   socialInFooter = true
   # Default image for social sharing and search engines. 
   # Place image file in `static` folder and specify image name here.
-  sharing_image = "/img/profile.jpeg"
+  #sharing_image = "/img/profile.jpeg"
   # Twitter username (without @). Used when a visitor shares your site on Twitter.
   #twitter = "apreshill"
   
@@ -126,16 +126,16 @@ enableEmoji = true
     title = "About Me"
     url = "/about/"
     weight = 1
-  [[menu.header]]
-    name = "Research"
-    title = "Research"
-    url = "/research/"
-    weight = 2
+  #[[menu.header]]
+  #  name = "Research"
+  #  title = "Research"
+  #  url = "/talk/"
+  #  weight = 2
   [[menu.header]]
     name = "Causal Inference"
     title = "Project in Causal Inference"
     url = "/project/"
-    weight = 3
+    weight = 2
 
   # Configure footer  
   #[[menu.footer]]
@@ -176,3 +176,4 @@ enableEmoji = true
   [privacy.youtube]
     disable = false
     privacyEnhanced = true
+
