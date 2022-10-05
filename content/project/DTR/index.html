@@ -1,49 +1,87 @@
 ---
-title: "Hello R Markdown"
-author: "Frida Gomam"
-date: 2020-12-01T21:13:14-05:00
-categories: ["R"]
-tags: ["R Markdown", "plot", "regression"]
+title: "Review of 'Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes'"
+subtitle: Phillip J. Schulte, Anastasios A. Tsiatis, Eric B. Laber, and Marie Davidian
+author: "Joowon Lee"
+date: "2022-10-05"
+categories: ["Causal Inference"]
+tags: ["Causal Inference", "Dynamic Treatment Regime"]
+excerpt: Review of the paper "Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes" written by P. J. Schulte, et al., (2014).
+links:
+- icon: door-open
+  icon_pack: fas
+  name: paper
+  url: https://pubmed.ncbi.nlm.nih.gov/25620840/
 ---
 
 
 
-<div id="r-markdown" class="section level1">
-<h1>R Markdown</h1>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>You can embed an R code chunk like this:</p>
-<pre class="r"><code>summary(cars)
-##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00
-fit &lt;- lm(dist ~ speed, data = cars)
-fit
-## 
-## Call:
-## lm(formula = dist ~ speed, data = cars)
-## 
-## Coefficients:
-## (Intercept)        speed  
-##     -17.579        3.932</code></pre>
+<hr />
+<p>In this project, we will review a paper <em>Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes</em> written by Phillip J. Schulte et al., (2014) <a href="https://pubmed.ncbi.nlm.nih.gov/25620840/">[paper]</a>.</p>
+<p>In clinical practice, clinicians make a series of decisions based on individual patient’s baseline and evolving characteristics. In this paper, we wanted to make optimal sequential treatment decisions to achieve the ‘best’ outcome for an individual patient. The list of sequential decision rules is formalized as a dynamic treatment regime. Throughout this paper, we investigate two main methods, Q-learning and A-learning, to estimate the optimal dynamic treatment regime based on data from a clinical trial or observational study.</p>
+<p>Let us first introduce the following notations:</p>
+<blockquote>
+<ul>
+<li><span class="math inline">\(k\)</span> : stages or pre-specified ordered decision points <span class="math inline">\(k = 1, \cdots, K\)</span>,</li>
+<li><span class="math inline">\(\Omega\)</span> : a superpopulation of patients with a patient <span class="math inline">\(\omega \in \Omega\)</span>,</li>
+<li><span class="math inline">\(Y\)</span> : a final outcome of interest (assuming that large values are preferred),</li>
+<li><span class="math inline">\(X_{k}\)</span> : covariate information immediately prior to decision <span class="math inline">\(k\)</span> with value <span class="math inline">\(x_{k} \in \mathcal{X}_{k}\)</span>,</li>
+<li><span class="math inline">\(A_{k}\)</span> : treatment at stage <span class="math inline">\(k\)</span> with value <span class="math inline">\(a_{k} \in \mathcal{A}_{k}\)</span> (a finite set possible options)</li>
+<li><span class="math inline">\(\overline{a_{k}} = (a_{1}, \cdots, a_{k})\)</span> : a possible treatment history through decision <span class="math inline">\(k\)</span> taking values in <span class="math inline">\(\overline{\mathcal{A}_{k}} = \mathcal{A}_{1} \times \cdots \mathcal{A}_{k}\)</span>.</li>
+</ul>
+</blockquote>
+<p>For example, when <span class="math inline">\(k=2\)</span>, we have time-ordered variables <span class="math inline">\((X_{1}, A_{1}, X_{2}, A_{2}, Y)\)</span>, where the dependency between them can be described as the following DAG:</p>
+<div class="figure">
+<img src="figures/dag.png" style="width:80.0%" alt="" />
+<p class="caption">DAG for k=2</p>
 </div>
-<div id="including-plots" class="section level1">
-<h1>Including Plots</h1>
-<p>You can also embed plots. See Figure <a href="#fig:pie">1</a> for example:</p>
-<pre class="r"><code>par(mar = c(0, 1, 0, 1))
-pie(
-  c(280, 60, 20),
-  c(&#39;Sky&#39;, &#39;Sunny side of pyramid&#39;, &#39;Shady side of pyramid&#39;),
-  col = c(&#39;#0292D8&#39;, &#39;#F7EA39&#39;, &#39;#C4B632&#39;),
-  init.angle = -50, border = NA
-)</code></pre>
-<div class="figure"><span style="display:block;" id="fig:pie"></span>
-<img src="{{< blogdown/postref >}}index_files/figure-html/pie-1.png" alt="A fancy pie chart." width="672" />
-<p class="caption">
-Figure 1: A fancy pie chart.
-</p>
+<p>Then we define the <strong>potential outcomes</strong></p>
+<blockquote>
+<p><span class="math display">\[\begin{align*}
+W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big), Y^{*}\big(\overline{a_{k}}\big) \,\, \text{ for all } \, \overline{a_{k}} \in \overline{\mathcal{A}_{k}} \right\}
+\end{align*}\]</span></p>
+</blockquote>
+<p>Here, <span class="math inline">\(X^{*}_{K}\big(\overline{a_{k-1}}\big)(\omega)\)</span> denotes the value of covariate information that would arise between decisions <span class="math inline">\(k-1\)</span> and <span class="math inline">\(k\)</span> for a patient <span class="math inline">\(\omega \in \Omega\)</span> who have received treatment history <span class="math inline">\(\overline{a_{k-1}}\)</span>, taking value <span class="math inline">\(x_{k}\)</span> in a set <span class="math inline">\(\mathcal{X}_{k}\)</span>. Similarly, <span class="math inline">\(Y^{*}\big(\overline{a_{k}}\big)\)</span> is the hypothetical outcome that would result for a patient <span class="math inline">\(\omega\)</span> who have received the full set of <span class="math inline">\(K\)</span> treatment in <span class="math inline">\(\overline{a_{k}}\)</span>. For simplicity, we write <span class="math inline">\(\overline{X}^{*}_{\underline{k}}\big(\overline{a_{k-1}}\big)=\{X_{1}, X^{*}_{2}(a_{1}), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big)\}, k = 1, \cdots, K\)</span>.</p>
+<hr />
+<div id="dynamic-treatment-regime" class="section level3">
+<h3>Dynamic Treatment Regime</h3>
+<p>A dynamic treatment regime <span class="math inline">\(\mathbf{d} = (d_{1}, \cdots, d_{K})\)</span> is a set of rules that forms an algorithm to treat individual patient over time (it is called ‘<em>dynamic</em>’ because treatment is determined based on a patient’s previous history). For example, at the <span class="math inline">\(k\)</span>th stage,</p>
+<ul>
+<li>the <span class="math inline">\(k\)</span>th rule <span class="math inline">\(d_{k}\)</span> takes
+<ul>
+<li>input : <span class="math inline">\(\overline{x_{k}}, \overline{a_{k-1}}\)</span> (patient’s realized covariate, and treatment history up to <span class="math inline">\(k-1\)</span>th decision),</li>
+<li>output : <span class="math inline">\(a_{k} \in \Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}}) \subset \mathcal{A}_{k}\)</span> where <span class="math inline">\(\Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}})\)</span> is a pre-specified set of possible traetment options for a patient with (<span class="math inline">\(\overline{x_{k}}, \overline{a_{k-1}}\)</span>).</li>
+</ul></li>
+</ul>
+<p>Since <span class="math inline">\(d_{k}\)</span> need only map a subset of <span class="math inline">\(\overline{\mathcal{X}_{k}} \times \overline{\mathcal{A}_{k-1}}\)</span>, namely <span class="math inline">\(\Gamma_{k}\)</span>, to <span class="math inline">\(\mathcal{A}_{k}\)</span>, let us define the subset <strong>recursively</strong> as</p>
+<p><span class="math display">\[\begin{align*}
+\Gamma_{k} &amp;= \{ (\overline{x_{k}}, \overline{a_{k-1}}) \in \overline{\mathcal{X}_{k}} \times \overline{\mathcal{A}_{k-1}} \,\, \text{ satisfying } \\
+&amp; \quad \quad \text{(i) } \, a_{j} \in \Psi_{j}\big( \overline{x_{j}}, \overline{a_{j-1}} \big), \,\, j = 1, \cdots, k-1, \\
+&amp; \quad \quad \text{(ii) } \, \mathbb{P}(\overline{X_{k}}\big(\overline{a_{k-1}} \big)=\overline{x_{k}})&gt;0\},
+\end{align*}\]</span></p>
+<p><span class="math inline">\(k=1, \cdots, K\)</span>, determined by <span class="math inline">\(\Psi=(\Psi_{1}, \cdots, \Psi_{K})\)</span>. Define the class <span class="math inline">\(\mathcal{D}\)</span> of dynamic treatment regimes to be the set of all <span class="math inline">\(\mathbf{d}=(d_{1}, \cdots. d_{k})\)</span> where <span class="math inline">\(d_{k}: \Gamma_{k} \rightarrow \mathcal{A}_{k}, k=1, \cdots, K\)</span>.</p>
+<blockquote>
+<p>Then, for any <span class="math inline">\(\mathbf{d} \in \mathcal{D}\)</span>, define the <strong>potential outcomes associated with <span class="math inline">\(\mathbf{d}\)</span></strong> as
+<span class="math display">\[\begin{align*}
+\left\{ X^{*}_{2}(d_{1}),  \cdots, X^{*}_{k}\big(\overline{d_{k-1}}\big), \cdots,  X^{*}_{K}\big(\overline{d_{k-1}}\big), Y^{*}\big(\mathbf{d}\big) \,\, \right\}
+\end{align*}\]</span></p>
+</blockquote>
+<p>Then how can we find an optimal regime (the ‘best’ treatment for a patient) with these definitions?</p>
+<p>The expected outcome in the population with all patients who have a baseline covariate <span class="math inline">\(X_{1} = x_{1}\)</span> and follow regime <span class="math inline">\(\mathbf{d}\)</span> is <span class="math inline">\(\mathbb{E}[Y^{*}\big(\mathbf{d}\big)\ | X_{1} = x_{1}]\)</span>. Then an optimal regime, <span class="math inline">\(\mathbf{d}^{opt} \in \mathcal{D}\)</span>, should satisfies</p>
+<p><span class="math display">\[\begin{align*}
+&amp; \mathbb{E}[Y^{*}\big(\mathbf{d}\big)\ | X_{1} = x_{1}] \quad \le \quad \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)\ | X_{1} = x_{1}], \,\, \text{ for all } \mathbf{d} \in \mathcal{D} \text{ and all } x_{1} \in \mathcal{X}_{1} \\
+\Rightarrow \,\, &amp; \mathbb{E}[Y^{*}\big(\mathbf{d}\big)] \qquad \qquad \quad \, \le \quad \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)], \qquad \quad \quad \,\, \text{ for all } \mathbf{d} \in \mathcal{D}
+\end{align*}\]</span></p>
+<hr />
 </div>
+<div id="model-setup-and-assumptions" class="section level3">
+<h3>Model Setup and Assumptions</h3>
+<p>The problem is that potential outcomes for an individual patient for all <span class="math inline">\(\mathbf{d} \in \mathcal{D}\)</span> may not be observed. Therefore, the goal of dynamic treatment regime is to estimate <span class="math inline">\(\mathbf{d}^{opt}\)</span> based on data. Consider a study with a random sample of <span class="math inline">\(n\)</span> patients in <span class="math inline">\(\Omega\)</span>. Assume independent and identically distributed time-ordered random variables <span class="math inline">\((X_{1i}, A_{1i}, \cdots, X_{Ki}, A_{Ki}, Y_{i}), i = 1, \cdots, n\)</span>.</p>
+<p>Use causal framework to estimate an optimal regime from the observed data under the following assumptions:</p>
+<ul>
+<li>Consistency assumption : <span class="math inline">\(X_{k} = X^{*}_{k}\big(\overline{A_{k-1}}\big), k=2, \cdots, K\)</span> and <span class="math inline">\(Y=Y^{*}\big(\overline{A_{k}}\big)\)</span>,</li>
+<li>Stable unit treatment value assumption (well-defineness) : a patient’s covariates and outcome are not affected by treatment assignment and other patients,</li>
+<li>Sequential Ignorability : <span class="math inline">\(A_{k} \perp W^{*} | \{\overline{X_{k}}, \overline{A_{k-1}} \}, k=1, \cdots, K\)</span>.</li>
+</ul>
+<hr />
+<p>(To be continued…)</p>
 </div>
