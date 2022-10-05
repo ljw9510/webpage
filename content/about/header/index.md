@@ -32,7 +32,7 @@ I earned my B.S. in Statistics and Nursing, and M.S. in Statistics at Seoul Nati
 </ul>
 </li>
 <li><p>Joowon Lee, Hanbaek Lyu, and Weixin Yao,
-<em>&quot;Supervised Dictionary Learning with Auxiliary Covariates</em>&quot; (<a href="https://arxiv.org/abs/2206.06774">arXiv</a> 2022, 61 pp, <a href="https://github.com/ljw9510/SDL">GitHub</a>)</p>
+<em>&quot;Supervised Dictionary Learning with Auxiliary Covariates</em>&quot; (<a href="https://arxiv.org/abs/2206.06774">arXiv</a> 2022, 61 pp, <a href="https://github.com/ljw9510/SDL">GitHub</a>, <a href="https://drive.google.com/file/d/1iWKPYQHC5SESJ4JNgdpyqubhBmfaeR_g/view?usp=sharing">Poster</a>)</p>
 <ul>
 <li>The recent work 2 on <em>supervised dictionary learning</em> provides a novel statistical method for finding class-discriminative dictionaries to perform supervised learning in the framework of dictionary learning. </li>
 </ul>

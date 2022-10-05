@@ -1,20 +1,16 @@
 ---
-author: Eric Anderson
+author: Joowon Lee
 categories:
-- Theme Features
-- R
-- package
-date: "2019-07-03"
+- Causal Inference
+- Dynamic Treatment Regime
+date: "2022-10-05"
 draft: false
-excerpt: Building this static site generator theme was the first time I used an Atomic
-  (or Functional) CSS system like Tachyons. It’s a design system that provides very
-  small (which means fast) CSS modules that you can use in your HTML.
+excerpt: Review of the paper "Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes" written by P. J. Schulte, et al., (2014).
 layout: single
-subtitle: A tachyon /ˈtæki.ɒn/ or tachyonic particle is a hypothetical particle that
-  always moves faster than light.
+subtitle: Review of the paper
 tags:
 - hugo-site
-title: Tachyons for Style
+title: Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes
 ---
 
 ![Tachyons Logo Script](tachyons-logo-script.png)
