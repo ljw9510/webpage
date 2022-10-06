@@ -33,12 +33,13 @@ knitr::opts_chunk$set(collapse = TRUE)
 > * $A_{k}$ : treatment at stage $k$ with value $a_{k} \in \mathcal{A}_{k}$ (a finite set possible options) 
 >  + $\overline{a_{k}} = (a_{1}, \cdots, a_{k})$  : a possible treatment history through decision $k$ taking values in $\overline{\mathcal{A}_{k}} = \mathcal{A}_{1} \times \cdots \mathcal{A}_{k}$.
             
-For example, when $k=2$, we have time-ordered variables $(X_{1}, A_{1}, X_{2}, A_{2}, Y)$, where the dependency between them can be described as the following DAG:
+For example, when $k=2$, we have time-ordered variables $(X_{1}, A_{1}, X_{2}, A_{2}, Y)$, where the dependency between them can be described as the following directed acyclic graph (DAG):
 
-![DAG for k=2](figures/dag.png){width=80%}
+<center>
+![Figure 1. Directed acyclic graph for k=2](figures/dag.png){width=80%}
+</center>
 
-Then we define the **potential outcomes**
-  
+>Then we define the **potential outcomes** 
 >  \begin{align*}
 >  W^{*} &= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big), Y^{*}\big(\overline{a_{k}}\big) \,\, \text{ for all } \, \overline{a_{k}} \in \overline{\mathcal{A}_{k}} \right\} 
 >  \end{align*}
