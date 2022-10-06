@@ -29,13 +29,15 @@ links:
 <li><span class="math inline">\(\overline{a_{k}} = (a_{1}, \cdots, a_{k})\)</span> : a possible treatment history through decision <span class="math inline">\(k\)</span> taking values in <span class="math inline">\(\overline{\mathcal{A}_{k}} = \mathcal{A}_{1} \times \cdots \mathcal{A}_{k}\)</span>.</li>
 </ul>
 </blockquote>
-<p>For example, when <span class="math inline">\(k=2\)</span>, we have time-ordered variables <span class="math inline">\((X_{1}, A_{1}, X_{2}, A_{2}, Y)\)</span>, where the dependency between them can be described as the following DAG:</p>
+<p>For example, when <span class="math inline">\(k=2\)</span>, we have time-ordered variables <span class="math inline">\((X_{1}, A_{1}, X_{2}, A_{2}, Y)\)</span>, where the dependency between them can be described as the following dynamic acyclic graph (DAG):</p>
+<center>
 <div class="figure">
 <img src="figures/dag.png" style="width:80.0%" alt="" />
-<p class="caption">DAG for k=2</p>
+<p class="caption">Figure 1. Dynamic acyclic graph for k=2</p>
+</center<
 </div>
-<p>Then we define the <strong>potential outcomes</strong></p>
 <blockquote>
+<p>Then we define the <strong>potential outcomes</strong></p>
 <p><span class="math display">\[\begin{align*}
 W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big), Y^{*}\big(\overline{a_{k}}\big) \,\, \text{ for all } \, \overline{a_{k}} \in \overline{\mathcal{A}_{k}} \right\}
 \end{align*}\]</span></p>
