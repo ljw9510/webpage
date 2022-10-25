@@ -13,131 +13,155 @@ links:
   url: https://pubmed.ncbi.nlm.nih.gov/25620840/
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
 
 
-<hr />
-<div id="list" class="section level3">
-<h3>List</h3>
-<p><a href="#overview">1. Overview</a></p>
-<p><a href="#identification">2. Identification</a></p>
-<hr />
-</div>
-<div id="overview" class="section level3">
-<h3>Overview</h3>
-<p>In this project, we will review a paper <em>Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes</em> written by Phillip J. Schulte et al., (2014) <a href="https://pubmed.ncbi.nlm.nih.gov/25620840/">[paper]</a>.</p>
-<p>In clinical practice, clinicians make a series of decisions based on individual patient’s baseline and evolving characteristics. In this paper, we wanted to make optimal sequential treatment decisions to achieve the ‘best’ outcome for an individual patient. The list of sequential decision rules is formalized as a dynamic treatment regime. Throughout this paper, we investigate two main methods, Q-learning and A-learning, to estimate the optimal dynamic treatment regime based on data from a clinical trial or observational study.</p>
-<p>Let us first introduce the following notations:</p>
-<blockquote>
-<ul>
-<li><span class="math inline">\(k\)</span> : stages or pre-specified ordered decision points <span class="math inline">\(k = 1, \cdots, K\)</span>,</li>
-<li><span class="math inline">\(\Omega\)</span> : a superpopulation of patients with a patient <span class="math inline">\(\omega \in \Omega\)</span>,</li>
-<li><span class="math inline">\(Y\)</span> : a final outcome of interest (assuming that large values are preferred),</li>
-<li><span class="math inline">\(X_{k}\)</span> : covariate information immediately prior to decision <span class="math inline">\(k\)</span> with value <span class="math inline">\(x_{k} \in \mathcal{X}_{k}\)</span>,</li>
-<li><span class="math inline">\(A_{k}\)</span> : treatment at stage <span class="math inline">\(k\)</span> with value <span class="math inline">\(a_{k} \in \mathcal{A}_{k}\)</span> (a finite set possible options)</li>
-<li><span class="math inline">\(\overline{a_{k}} = (a_{1}, \cdots, a_{k})\)</span> : a possible treatment history through decision <span class="math inline">\(k\)</span> taking values in <span class="math inline">\(\overline{\mathcal{A}_{k}} = \mathcal{A}_{1} \times \cdots \mathcal{A}_{k}\)</span>.</li>
-</ul>
-</blockquote>
-<p>For example, when <span class="math inline">\(k=2\)</span>, we have time-ordered variables <span class="math inline">\((X_{1}, A_{1}, X_{2}, A_{2}, Y)\)</span>, where the dependency between them can be described as the following dynamic acyclic graph (DAG):</p>
+---
+
+### List
+
+[1. Overview](#overview)
+
+[2. Identification](#identification)
+
+
+---
+
+
+### Overview
+
+  In this project, we will review a paper *Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes* written by Phillip J. Schulte et al., (2014) [[paper]](https://pubmed.ncbi.nlm.nih.gov/25620840/).
+
+
+  In clinical practice, clinicians make a series of decisions based on individual patient's baseline and evolving characteristics. In this paper, we wanted to make optimal sequential treatment decisions to achieve the 'best' outcome for an individual patient. The list of sequential decision rules is formalized as a dynamic treatment regime. Throughout this paper, we investigate two main methods, Q-learning and A-learning, to estimate the optimal dynamic treatment regime based on data from a clinical trial or observational study.
+
+  Let us first introduce the following notations:
+  
+> * $k$ : stages or pre-specified ordered decision points $k = 1, \cdots, K$,
+> * $\Omega$ : a superpopulation of patients with a patient $\omega \in \Omega$,
+> * $Y$ : a final outcome of interest (assuming that large values are preferred),
+> * $X_{k}$ : covariate information immediately prior to decision $k$ with value $x_{k} \in \mathcal{X}_{k}$,
+> * $A_{k}$ : treatment at stage $k$ with value $a_{k} \in \mathcal{A}_{k}$ (a finite set possible options) 
+>  + $\overline{a_{k}} = (a_{1}, \cdots, a_{k})$  : a possible treatment history through decision $k$ taking values in $\overline{\mathcal{A}_{k}} = \mathcal{A}_{1} \times \cdots \mathcal{A}_{k}$.
+            
+For example, when $k=2$, we have time-ordered variables $(X_{1}, A_{1}, X_{2}, A_{2}, Y)$, where the dependency between them can be described as the following dynamic acyclic graph (DAG):
+
 <center>
-<div class="figure">
-<img src="figures/dag.png" style="width:80.0%" alt="" />
-<p class="caption">Figure 1. Dynamic acyclic graph for k = 2</p>
-</div>
+![Figure 1. Dynamic acyclic graph for k = 2](figures/dag.png){width=80%}
 </center>
-<blockquote>
-<p>Then we define the <strong>potential outcomes</strong>
-<span class="math display">\[\begin{align*}
-W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big), Y^{*}\big(\overline{a_{k}}\big) \,\, \text{ for all } \, \overline{a_{k}} \in \overline{\mathcal{A}_{k}} \right\}
-\end{align*}\]</span></p>
-</blockquote>
-<p>Here, <span class="math inline">\(X^{*}_{K}\big(\overline{a_{k-1}}\big)(\omega)\)</span> denotes the value of covariate information that would arise between decisions <span class="math inline">\(k-1\)</span> and <span class="math inline">\(k\)</span> for a patient <span class="math inline">\(\omega \in \Omega\)</span> who have received treatment history <span class="math inline">\(\overline{a_{k-1}}\)</span>, taking value <span class="math inline">\(x_{k}\)</span> in a set <span class="math inline">\(\mathcal{X}_{k}\)</span>. Similarly, <span class="math inline">\(Y^{*}\big(\overline{a_{k}}\big)\)</span> is the hypothetical outcome that would result for a patient <span class="math inline">\(\omega\)</span> who have received the full set of <span class="math inline">\(K\)</span> treatment in <span class="math inline">\(\overline{a_{k}}\)</span>. For simplicity, we write <span class="math inline">\(\overline{X}^{*}_{\underline{k}}\big(\overline{a_{k-1}}\big)=\{X_{1}, X^{*}_{2}(a_{1}), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big)\}, k = 1, \cdots, K\)</span>.</p>
-<hr />
-</div>
-<div id="dynamic-treatment-regime" class="section level3">
-<h3>Dynamic Treatment Regime</h3>
-<p>A dynamic treatment regime <span class="math inline">\(\mathbf{d} = (d_{1}, \cdots, d_{K})\)</span> is a set of rules that forms an algorithm to treat individual patient over time (it is called ‘<em>dynamic</em>’ because treatment is determined based on a patient’s previous history). For example, at the <span class="math inline">\(k\)</span>th stage,</p>
-<ul>
-<li>the <span class="math inline">\(k\)</span>th rule <span class="math inline">\(d_{k}\)</span> takes
-<ul>
-<li>input : <span class="math inline">\(\overline{x_{k}}, \overline{a_{k-1}}\)</span> (patient’s realized covariate, and treatment history up to <span class="math inline">\(k-1\)</span>th decision),</li>
-<li>output : <span class="math inline">\(a_{k} \in \Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}}) \subset \mathcal{A}_{k}\)</span> where <span class="math inline">\(\Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}})\)</span> is a pre-specified set of possible traetment options for a patient with (<span class="math inline">\(\overline{x_{k}}, \overline{a_{k-1}}\)</span>).</li>
-</ul></li>
-</ul>
-<p>Since <span class="math inline">\(d_{k}\)</span> need only map a subset of <span class="math inline">\(\overline{\mathcal{X}_{k}} \times \overline{\mathcal{A}_{k-1}}\)</span>, namely <span class="math inline">\(\Gamma_{k}\)</span>, to <span class="math inline">\(\mathcal{A}_{k}\)</span>, let us define the subset <strong>recursively</strong> as</p>
-<p><span class="math display">\[\begin{align*}
-\Gamma_{k} &amp;= \{ (\overline{x_{k}}, \overline{a_{k-1}}) \in \overline{\mathcal{X}_{k}} \times \overline{\mathcal{A}_{k-1}} \,\, \text{ satisfying } \\
-&amp; \quad \quad \text{(i) } \, a_{j} \in \Psi_{j}\big( \overline{x_{j}}, \overline{a_{j-1}} \big), \,\, j = 1, \cdots, k-1, \\
-&amp; \quad \quad \text{(ii) } \, \mathbb{P}(\overline{X_{k}}\big(\overline{a_{k-1}} \big)=\overline{x_{k}})&gt;0\},
-\end{align*}\]</span></p>
-<p><span class="math inline">\(k=1, \cdots, K\)</span>, determined by <span class="math inline">\(\Psi=(\Psi_{1}, \cdots, \Psi_{K})\)</span>. Define the class <span class="math inline">\(\mathcal{D}\)</span> of dynamic treatment regimes to be the set of all <span class="math inline">\(\mathbf{d}=(d_{1}, \cdots. d_{k})\)</span> where <span class="math inline">\(d_{k}: \Gamma_{k} \rightarrow \mathcal{A}_{k}, k=1, \cdots, K\)</span>.</p>
-<blockquote>
-<p>Then, for any <span class="math inline">\(\mathbf{d} \in \mathcal{D}\)</span>, define the <strong>potential outcomes associated with <span class="math inline">\(\mathbf{d}\)</span></strong> as
-<span class="math display">\[\begin{align*}
+
+>Then we define the **potential outcomes**
+>  \begin{align*}
+>  W^{*} &= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big), Y^{*}\big(\overline{a_{k}}\big) \,\, \text{ for all } \, \overline{a_{k}} \in \overline{\mathcal{A}_{k}} \right\} 
+>  \end{align*}
+  
+  Here, $X^{*}_{K}\big(\overline{a_{k-1}}\big)(\omega)$ denotes the value of covariate information that would arise between decisions $k-1$ and $k$ for a patient $\omega \in \Omega$ who have received treatment history $\overline{a_{k-1}}$, taking value $x_{k}$ in a set $\mathcal{X}_{k}$. Similarly, $Y^{*}\big(\overline{a_{k}}\big)$ is the hypothetical outcome that would result for a patient $\omega$ who have received the full set of $K$ treatment in $\overline{a_{k}}$. For simplicity, we write $\overline{X}^{*}_{\underline{k}}\big(\overline{a_{k-1}}\big)=\{X_{1},  X^{*}_{2}(a_{1}), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big)\}, k = 1, \cdots, K$.
+
+---
+
+### Dynamic Treatment Regime
+
+A dynamic treatment regime $\mathbf{d} = (d_{1}, \cdots, d_{K})$ is a set of rules that forms an algorithm to treat individual patient over time (it is called '*dynamic*' because treatment is determined based on a patient's previous history). For example, at the $k$th stage, 
+
+* the $k$th rule $d_{k}$ takes
+  + input : $\overline{x_{k}}, \overline{a_{k-1}}$ (patient's realized covariate, and treatment history up to $k-1$th decision),
+  + output : $a_{k} \in \Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}}) \subset \mathcal{A}_{k}$ where $\Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}})$ is a pre-specified set of possible traetment options for a patient with ($\overline{x_{k}}, \overline{a_{k-1}}$).
+  
+Since $d_{k}$ need only map a subset of $\overline{\mathcal{X}_{k}} \times \overline{\mathcal{A}_{k-1}}$, namely $\Gamma_{k}$, to $\mathcal{A}_{k}$, let us define the subset **recursively** as
+
+\begin{align*}
+\Gamma_{k} &= \{ (\overline{x_{k}}, \overline{a_{k-1}}) \in \overline{\mathcal{X}_{k}} \times \overline{\mathcal{A}_{k-1}} \,\, \text{ satisfying } \\
+& \quad \quad \text{(i) } \, a_{j} \in \Psi_{j}\big( \overline{x_{j}}, \overline{a_{j-1}} \big), \,\, j = 1, \cdots, k-1, \\
+& \quad \quad \text{(ii) } \, \mathbb{P}(\overline{X_{k}}\big(\overline{a_{k-1}} \big)=\overline{x_{k}})>0\},
+\end{align*}
+
+$k=1, \cdots, K$, determined by $\Psi=(\Psi_{1}, \cdots, \Psi_{K})$. Define the class $\mathcal{D}$ of dynamic treatment regimes to be the set of all $\mathbf{d}=(d_{1}, \cdots. d_{k})$ where $d_{k}: \Gamma_{k} \rightarrow \mathcal{A}_{k}, k=1, \cdots, K$. 
+
+>Then, for any $\mathbf{d} \in \mathcal{D}$, define the **potential outcomes associated with $\mathbf{d}$** as 
+>\begin{align*}
 \left\{ X^{*}_{2}(d_{1}),  \cdots, X^{*}_{k}\big(\overline{d_{k-1}}\big), \cdots,  X^{*}_{K}\big(\overline{d_{k-1}}\big), Y^{*}\big(\mathbf{d}\big) \,\, \right\}
-\end{align*}\]</span></p>
-</blockquote>
-<p>Then how can we find an optimal regime (the ‘best’ treatment for a patient) with these definitions?</p>
-<p>The expected outcome in the population with all patients who have a baseline covariate <span class="math inline">\(X_{1} = x_{1}\)</span> and follow regime <span class="math inline">\(\mathbf{d}\)</span> is <span class="math inline">\(\mathbb{E}[Y^{*}\big(\mathbf{d}\big)\ | X_{1} = x_{1}]\)</span>. Then an optimal regime, <span class="math inline">\(\mathbf{d}^{opt} \in \mathcal{D}\)</span>, should satisfies</p>
-<p><span class="math display">\[\begin{align*}
-&amp; \mathbb{E}[Y^{*}\big(\mathbf{d}\big)\ | X_{1} = x_{1}] \quad \le \quad \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)\ | X_{1} = x_{1}], \,\, \text{ for all } \mathbf{d} \in \mathcal{D} \text{ and all } x_{1} \in \mathcal{X}_{1} \\
-\Rightarrow \,\, &amp; \mathbb{E}[Y^{*}\big(\mathbf{d}\big)] \qquad \qquad \quad \, \le \quad \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)], \qquad \quad \quad \,\, \text{ for all } \mathbf{d} \in \mathcal{D}
-\end{align*}\]</span></p>
-<hr />
-</div>
-<div id="model-setup-and-assumptions" class="section level3">
-<h3>Model Setup and Assumptions</h3>
-<p>The problem is that potential outcomes for an individual patient for all <span class="math inline">\(\mathbf{d} \in \mathcal{D}\)</span> may not be observed. Therefore, the goal of dynamic treatment regime is to estimate <span class="math inline">\(\mathbf{d}^{opt}\)</span> based on data. Consider a study with a random sample of <span class="math inline">\(n\)</span> patients in <span class="math inline">\(\Omega\)</span>. Assume independent and identically distributed time-ordered random variables <span class="math inline">\((X_{1i}, A_{1i}, \cdots, X_{Ki}, A_{Ki}, Y_{i}), i = 1, \cdots, n\)</span>.</p>
-<p>Use causal framework to estimate an optimal regime from the observed data under the following assumptions:</p>
-<ul>
-<li>Consistency assumption : <span class="math inline">\(X_{k} = X^{*}_{k}\big(\overline{A_{k-1}}\big), k=2, \cdots, K\)</span> and <span class="math inline">\(Y=Y^{*}\big(\overline{A_{k}}\big)\)</span>,</li>
-<li>Stable unit treatment value assumption (well-defineness) : a patient’s covariates and outcome are not affected by treatment assignment and other patients,</li>
-<li>Sequential Ignorability : <span class="math inline">\(A_{k} \perp W^{*} | \{\overline{X_{k}}, \overline{A_{k-1}} \}, k=1, \cdots, K\)</span>.</li>
-</ul>
-<hr />
-</div>
-<div id="identification" class="section level3">
-<h3>Identification</h3>
-<p>In this section, we first consider a fixed treatment <span class="math inline">\((a_{1}, a_{2}) \in \{0, 1\}^{2}\)</span> with the two time points <span class="math inline">\((k = 2)\)</span>. We are interested in estimating the expected potential outcome <span class="math inline">\(\mathbb{E}[Y(a_{1},a_{2})]\)</span> of treatment <span class="math inline">\((a_{1},a_{2})\)</span> which may or may not be observable based on statistical quantity.</p>
-<p>From the following lemma below, we show that the expected potential outcome of <span class="math inline">\((a_{1}, a_{2})\)</span> can be identified as a statistical estimand, a function of conditional expectation.</p>
-<p><br />
-</p>
-<div class="lemma">
-<p><span id="lem:unlabeled-div-1" class="lemma"><strong>Lemma 1  </strong></span><em>Fix a treatment <span class="math inline">\((a_{1},a_{2})\in \{0,1\}^{2}\)</span>. Then we have</em>
-<span class="math display">\[\begin{align*}
-&amp; \mathbb{E}[Y(a_1, a_2)] = \mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \mathbb{E}_{Y}[Y | X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2}] \bigg| X_{1}, A_{1} = a_{1} \bigg] \bigg]
-\end{align*}\]</span></p>
-</div>
-<div class="proof">
-<p><span id="unlabeled-div-2" class="proof"><em>Proof</em>. </span><span class="math inline">\({}\)</span></p>
-<p>From sequential ignorability assumption, we have <span class="math inline">\(Y(a_1, a_2) \perp A_{1} | X_{1}\)</span> and <span class="math inline">\(Y(a_1, a_2) \perp A_{2} | \{(X_{1}, X_{2}), A_{1}\}\)</span>. Also, you may notice that <span class="math inline">\(X_{2}=X_{2}(a_{1})\)</span>. Then
-<span class="math display">\[\begin{align*}
-    &amp;\mathbb{E}[Y(a_1, a_2) | X_{1} = x_{1}, X_{2}(a_{1}) = x_{2} ] \\
-    &amp;\qquad = \mathbb{E}[Y(a_1, a_2) | X_{1} = x_{1}, X_{2} = x_{2}, A_{1} = a_{1}, A_{2} = a_{2} ]  \quad (\because \text{sequential ignorability}) \\
-    &amp;\qquad = \mathbb{E}[Y | X_{1} = x_{1}, A_{1} = a_{1}, X_{2} = x_{2},  A_{2} = a_{2} ] \quad \quad \, \qquad (\because \text{consistency})
-\end{align*}\]</span>
-We also remark that the last equality above can be derived using the <span class="math inline">\(g\)</span>-formula.</p>
-<p>Using the fact above and iterated expectation,
-<span class="math display">\[\begin{align*}
-&amp;\mathbb{E}[Y(a_1, a_2)] \\
-&amp;\qquad = \mathbb{E}_{(X_{1}, X_{2}(a_{1})))} \bigg[ \underbrace{\mathbb{E}_{Y} \bigg[ Y(a_1, a_2) | X_{1}, X_{2}(a_{1}) \bigg]}_{=:g\left(X_{1}, X_{2} (a_{1}) \right)} \bigg] \\
-&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}(a_{1})\right) | X_{1} \right] \right] \\
-&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}(a_{1})\right) | X_{1}, A_{1} = a_{1} \right] \right] \quad \,\, (\because \text{sequential ignorability}) \\
-&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}\right) | X_{1}, A_{1} = a_{1} \right] \right] \qquad \quad (\because \text{consistency}) \\
-&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}} \left[ \mathbb{E}[Y | X_{1}, A_{1} = a_{1}, X_{2},  A_{2} = a_{2} ] | X_{1}, A_{1} = a_{1} \right] \right]. \\
-&amp; \hspace{12cm} \square
-\end{align*}\]</span></p>
-</div>
-<p>Now consider the general case when we have <span class="math inline">\(K\)</span> time points. First define the following conditional expectation as <span class="math inline">\(\mu_{\overline{a_{K}}} (\overline{x_{K}})\)</span> for simplicity.</p>
-<p><span class="math display">\[\begin{align*}
+\end{align*}
+
+Then how can we find an optimal regime (the 'best' treatment for a patient) with these definitions?
+
+The expected outcome in the population with all patients who have a baseline covariate $X_{1} = x_{1}$ and follow regime $\mathbf{d}$ is $\mathbb{E}[Y^{*}\big(\mathbf{d}\big)\ | X_{1} = x_{1}]$. Then an optimal regime, $\mathbf{d}^{opt} \in \mathcal{D}$, should satisfies
+
+\begin{align*}
+& \mathbb{E}[Y^{*}\big(\mathbf{d}\big)\ | X_{1} = x_{1}] \quad \le \quad \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)\ | X_{1} = x_{1}], \,\, \text{ for all } \mathbf{d} \in \mathcal{D} \text{ and all } x_{1} \in \mathcal{X}_{1} \\
+\Rightarrow \,\, & \mathbb{E}[Y^{*}\big(\mathbf{d}\big)] \qquad \qquad \quad \, \le \quad \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)], \qquad \quad \quad \,\, \text{ for all } \mathbf{d} \in \mathcal{D}
+\end{align*}
+
+---
+
+### Model Setup and Assumptions
+
+The problem is that potential outcomes for an individual patient for all $\mathbf{d} \in \mathcal{D}$ may not be observed. Therefore, the goal of dynamic treatment regime is to estimate $\mathbf{d}^{opt}$ based on data. Consider a study with a random sample of $n$ patients in $\Omega$. Assume independent and identically distributed time-ordered random variables $(X_{1i}, A_{1i}, \cdots, X_{Ki}, A_{Ki}, Y_{i}), i = 1, \cdots, n$.
+
+Use causal framework to estimate an optimal regime from the observed data under the following assumptions:
+
+* Consistency assumption : $X_{k} = X^{*}_{k}\big(\overline{A_{k-1}}\big), k=2, \cdots, K$ and $Y=Y^{*}\big(\overline{A_{k}}\big)$,
+* Stable unit treatment value assumption (well-defineness) : a patient's covariates and outcome are not affected by treatment assignment and other patients,
+* Sequential Ignorability : $A_{k} \perp W^{*} | \{\overline{X_{k}}, \overline{A_{k-1}} \}, k=1, \cdots, K$.
+
+---
+
+### Identification
+
+In this section, we first consider a fixed treatment $(a_{1}, a_{2}) \in \{0, 1\}^{2}$ with the two time points $(k = 2)$. We are interested in estimating the expected potential outcome $\mathbb{E}[Y(a_{1},a_{2})]$ of treatment $(a_{1},a_{2})$ which may or may not be observable based on statistical quantity.
+
+From the following lemma below, we show that the expected potential outcome of $(a_{1}, a_{2})$ can be identified as a statistical estimand, a function of conditional expectation.
+
+\
+
+\newtheorem{lemma}[theorem]{Lemma}
+
+::: {.lemma}
+ *Fix a treatment $(a_{1},a_{2})\in \{0,1\}^{2}$. Then we have*
+\begin{align*}
+& \mathbb{E}[Y(a_1, a_2)] = \mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \mathbb{E}_{Y}[Y | X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2}] \bigg| X_{1}, A_{1} = a_{1} \bigg] \bigg]
+\end{align*}
+:::
+
+::: {.proof}
+${}$
+
+From sequential ignorability assumption, we have $Y(a_1, a_2) \perp A_{1} | X_{1}$ and $Y(a_1, a_2) \perp A_{2} | \{(X_{1}, X_{2}), A_{1}\}$. Also, you may notice that $X_{2}=X_{2}(a_{1})$. Then 
+\begin{align*}
+    &\mathbb{E}[Y(a_1, a_2) | X_{1} = x_{1}, X_{2}(a_{1}) = x_{2} ] \\
+    &\qquad = \mathbb{E}[Y(a_1, a_2) | X_{1} = x_{1}, X_{2} = x_{2}, A_{1} = a_{1}, A_{2} = a_{2} ]  \quad (\because \text{sequential ignorability}) \\
+    &\qquad = \mathbb{E}[Y | X_{1} = x_{1}, A_{1} = a_{1}, X_{2} = x_{2},  A_{2} = a_{2} ] \quad \quad \, \qquad (\because \text{consistency})
+\end{align*}
+We also remark that the last equality above can be derived using the $g$-formula.
+
+Using the fact above and iterated expectation, 
+\begin{align*}
+&\mathbb{E}[Y(a_1, a_2)] \\
+&\qquad = \mathbb{E}_{(X_{1}, X_{2}(a_{1})))} \bigg[ \underbrace{\mathbb{E}_{Y} \bigg[ Y(a_1, a_2) | X_{1}, X_{2}(a_{1}) \bigg]}_{=:g\left(X_{1}, X_{2} (a_{1}) \right)} \bigg] \\
+&\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}(a_{1})\right) | X_{1} \right] \right] \\
+&\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}(a_{1})\right) | X_{1}, A_{1} = a_{1} \right] \right] \quad \,\, (\because \text{sequential ignorability}) \\
+&\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}\right) | X_{1}, A_{1} = a_{1} \right] \right] \qquad \quad (\because \text{consistency}) \\
+&\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}} \left[ \mathbb{E}[Y | X_{1}, A_{1} = a_{1}, X_{2},  A_{2} = a_{2} ] | X_{1}, A_{1} = a_{1} \right] \right]. \\
+& \hspace{12cm} \square
+\end{align*}
+:::
+
+
+Now consider the general case when we have $K$ time points. First define the following conditional expectation as $\mu_{\overline{a_{K}}} (\overline{x_{K}})$ for simplicity.
+
+\begin{align*}
 \mu_{\overline{a_{K}}} (\overline{x_{K}}) := \mathbb{E}[Y | \overline{X_{K}} = \overline{x_{K}}, \overline{A_{K}}= \overline{a_{K}}].
-\end{align*}\]</span></p>
-<p><br />
-</p>
-<div class="lemma">
-<p><span id="lem:unlabeled-div-3" class="lemma"><strong>Lemma 2  </strong></span><em>Fix a treatment <span class="math inline">\(\overline{a_{K}}=(a_{1},\cdots,a_{K})\in \{0,1\}^{K}\)</span>. Then we have</em>
-<span class="math display">\[\begin{align*}
+\end{align*}
+
+\
+
+::: {.lemma}
+ *Fix a treatment $\overline{a_{K}}=(a_{1},\cdots,a_{K})\in \{0,1\}^{K}$. Then we have*
+\begin{align*}
 \mathbb{E}[Y(\overline{a_{K}})] = \mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \cdots \left[ \mu_{\overline{a_{K}}} (\overline{X_{K}}) | \overline{X_{K-1}}, \overline{A_{k-1}} = \overline{a_{k-1}} \right] \bigg] \bigg| \overline{X_{K-2}}, \overline{A_{k-2}} = \overline{a_{k-2}} \bigg] \cdots \bigg| X_{1}, A_{1} = a_{1} \bigg] \bigg]
-\end{align*}\]</span></p>
-</div>
-<p>We can prove this similarly to the above proof or by using g-formula.</p>
-</div>
+\end{align*}
+:::
+
+We can prove this similarly to the above proof or by using g-formula.
+
