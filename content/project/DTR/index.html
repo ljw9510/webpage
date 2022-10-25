@@ -16,6 +16,14 @@ links:
 
 
 <hr />
+<div id="list" class="section level3">
+<h3>List</h3>
+<p><a href="#overview">1. Overview</a></p>
+<p><a href="#identification">2. Identification</a></p>
+<hr />
+</div>
+<div id="overview" class="section level3">
+<h3>Overview</h3>
 <p>In this project, we will review a paper <em>Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes</em> written by Phillip J. Schulte et al., (2014) <a href="https://pubmed.ncbi.nlm.nih.gov/25620840/">[paper]</a>.</p>
 <p>In clinical practice, clinicians make a series of decisions based on individual patient’s baseline and evolving characteristics. In this paper, we wanted to make optimal sequential treatment decisions to achieve the ‘best’ outcome for an individual patient. The list of sequential decision rules is formalized as a dynamic treatment regime. Throughout this paper, we investigate two main methods, Q-learning and A-learning, to estimate the optimal dynamic treatment regime based on data from a clinical trial or observational study.</p>
 <p>Let us first introduce the following notations:</p>
@@ -30,18 +38,21 @@ links:
 </ul>
 </blockquote>
 <p>For example, when <span class="math inline">\(k=2\)</span>, we have time-ordered variables <span class="math inline">\((X_{1}, A_{1}, X_{2}, A_{2}, Y)\)</span>, where the dependency between them can be described as the following dynamic acyclic graph (DAG):</p>
+<center>
 <div class="figure">
 <img src="figures/dag.png" style="width:80.0%" alt="" />
-<p class="caption">Figure 1. Dynamic acyclic graph for k=2</p>
+<p class="caption">Figure 1. Dynamic acyclic graph for k = 2</p>
 </div>
+</center>
 <blockquote>
-<p>Then we define the <strong>potential outcomes</strong></p>
-<p><span class="math display">\[\begin{align*}
+<p>Then we define the <strong>potential outcomes</strong>
+<span class="math display">\[\begin{align*}
 W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big), Y^{*}\big(\overline{a_{k}}\big) \,\, \text{ for all } \, \overline{a_{k}} \in \overline{\mathcal{A}_{k}} \right\}
 \end{align*}\]</span></p>
 </blockquote>
 <p>Here, <span class="math inline">\(X^{*}_{K}\big(\overline{a_{k-1}}\big)(\omega)\)</span> denotes the value of covariate information that would arise between decisions <span class="math inline">\(k-1\)</span> and <span class="math inline">\(k\)</span> for a patient <span class="math inline">\(\omega \in \Omega\)</span> who have received treatment history <span class="math inline">\(\overline{a_{k-1}}\)</span>, taking value <span class="math inline">\(x_{k}\)</span> in a set <span class="math inline">\(\mathcal{X}_{k}\)</span>. Similarly, <span class="math inline">\(Y^{*}\big(\overline{a_{k}}\big)\)</span> is the hypothetical outcome that would result for a patient <span class="math inline">\(\omega\)</span> who have received the full set of <span class="math inline">\(K\)</span> treatment in <span class="math inline">\(\overline{a_{k}}\)</span>. For simplicity, we write <span class="math inline">\(\overline{X}^{*}_{\underline{k}}\big(\overline{a_{k-1}}\big)=\{X_{1}, X^{*}_{2}(a_{1}), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big)\}, k = 1, \cdots, K\)</span>.</p>
 <hr />
+</div>
 <div id="dynamic-treatment-regime" class="section level3">
 <h3>Dynamic Treatment Regime</h3>
 <p>A dynamic treatment regime <span class="math inline">\(\mathbf{d} = (d_{1}, \cdots, d_{K})\)</span> is a set of rules that forms an algorithm to treat individual patient over time (it is called ‘<em>dynamic</em>’ because treatment is determined based on a patient’s previous history). For example, at the <span class="math inline">\(k\)</span>th stage,</p>
@@ -83,5 +94,50 @@ W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdo
 <li>Sequential Ignorability : <span class="math inline">\(A_{k} \perp W^{*} | \{\overline{X_{k}}, \overline{A_{k-1}} \}, k=1, \cdots, K\)</span>.</li>
 </ul>
 <hr />
-<p>(To be continued…)</p>
+</div>
+<div id="identification" class="section level3">
+<h3>Identification</h3>
+<p>In this section, we first consider a fixed treatment <span class="math inline">\((a_{1}, a_{2}) \in \{0, 1\}^{2}\)</span> with the two time points <span class="math inline">\((k = 2)\)</span>. We are interested in estimating the expected potential outcome <span class="math inline">\(\mathbb{E}[Y(a_{1},a_{2})]\)</span> of treatment <span class="math inline">\((a_{1},a_{2})\)</span> which may or may not be observable based on statistical quantity.</p>
+<p>From the following lemma below, we show that the expected potential outcome of <span class="math inline">\((a_{1}, a_{2})\)</span> can be identified as a statistical estimand, a function of conditional expectation.</p>
+<p><br />
+</p>
+<div class="lemma">
+<p><span id="lem:unlabeled-div-1" class="lemma"><strong>Lemma 1  </strong></span><em>Fix a treatment <span class="math inline">\((a_{1},a_{2})\in \{0,1\}^{2}\)</span>. Then we have</em>
+<span class="math display">\[\begin{align*}
+&amp; \mathbb{E}[Y(a_1, a_2)] = \mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \mathbb{E}_{Y}[Y | X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2}] \bigg| X_{1}, A_{1} = a_{1} \bigg] \bigg]
+\end{align*}\]</span></p>
+</div>
+<div class="proof">
+<p><span id="unlabeled-div-2" class="proof"><em>Proof</em>. </span><span class="math inline">\({}\)</span></p>
+<p>From sequential ignorability assumption, we have <span class="math inline">\(Y(a_1, a_2) \perp A_{1} | X_{1}\)</span> and <span class="math inline">\(Y(a_1, a_2) \perp A_{2} | \{(X_{1}, X_{2}), A_{1}\}\)</span>. Also, you may notice that <span class="math inline">\(X_{2}=X_{2}(a_{1})\)</span>. Then
+<span class="math display">\[\begin{align*}
+    &amp;\mathbb{E}[Y(a_1, a_2) | X_{1} = x_{1}, X_{2}(a_{1}) = x_{2} ] \\
+    &amp;\qquad = \mathbb{E}[Y(a_1, a_2) | X_{1} = x_{1}, X_{2} = x_{2}, A_{1} = a_{1}, A_{2} = a_{2} ]  \quad (\because \text{sequential ignorability}) \\
+    &amp;\qquad = \mathbb{E}[Y | X_{1} = x_{1}, A_{1} = a_{1}, X_{2} = x_{2},  A_{2} = a_{2} ] \quad \quad \, \qquad (\because \text{consistency})
+\end{align*}\]</span>
+We also remark that the last equality above can be derived using the <span class="math inline">\(g\)</span>-formula.</p>
+<p>Using the fact above and iterated expectation,
+<span class="math display">\[\begin{align*}
+&amp;\mathbb{E}[Y(a_1, a_2)] \\
+&amp;\qquad = \mathbb{E}_{(X_{1}, X_{2}(a_{1})))} \bigg[ \underbrace{\mathbb{E}_{Y} \bigg[ Y(a_1, a_2) | X_{1}, X_{2}(a_{1}) \bigg]}_{=:g\left(X_{1}, X_{2} (a_{1}) \right)} \bigg] \\
+&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}(a_{1})\right) | X_{1} \right] \right] \\
+&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}(a_{1})\right) | X_{1}, A_{1} = a_{1} \right] \right] \quad \,\, (\because \text{sequential ignorability}) \\
+&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}\right) | X_{1}, A_{1} = a_{1} \right] \right] \qquad \quad (\because \text{consistency}) \\
+&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}} \left[ \mathbb{E}[Y | X_{1}, A_{1} = a_{1}, X_{2},  A_{2} = a_{2} ] | X_{1}, A_{1} = a_{1} \right] \right]. \\
+&amp; \hspace{12cm} \square
+\end{align*}\]</span></p>
+</div>
+<p>Now consider the general case when we have <span class="math inline">\(K\)</span> time points. First define the following conditional expectation as <span class="math inline">\(\mu_{\overline{a_{K}}} (\overline{x_{K}})\)</span> for simplicity.</p>
+<p><span class="math display">\[\begin{align*}
+\mu_{\overline{a_{K}}} (\overline{x_{K}}) := \mathbb{E}[Y | \overline{X_{K}} = \overline{x_{K}}, \overline{A_{K}}= \overline{a_{K}}].
+\end{align*}\]</span></p>
+<p><br />
+</p>
+<div class="lemma">
+<p><span id="lem:unlabeled-div-3" class="lemma"><strong>Lemma 2  </strong></span><em>Fix a treatment <span class="math inline">\(\overline{a_{K}}=(a_{1},\cdots,a_{K})\in \{0,1\}^{K}\)</span>. Then we have</em>
+<span class="math display">\[\begin{align*}
+\mathbb{E}[Y(\overline{a_{K}})] = \mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \cdots \left[ \mu_{\overline{a_{K}}} (\overline{X_{K}}) | \overline{X_{K-1}}, \overline{A_{k-1}} = \overline{a_{k-1}} \right] \bigg] \bigg| \overline{X_{K-2}}, \overline{A_{k-2}} = \overline{a_{k-2}} \bigg] \cdots \bigg| X_{1}, A_{1} = a_{1} \bigg] \bigg]
+\end{align*}\]</span></p>
+</div>
+<p>We can prove this similarly to the above proof or by using g-formula.</p>
 </div>
