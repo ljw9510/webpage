@@ -12,15 +12,20 @@ links:
   name: paper
   url: https://pubmed.ncbi.nlm.nih.gov/25620840/
 ---
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE)
 ```
+
 ---
+
 ### List
 
 [1. Overview](#overview)
 
 [2. Identification](#identification)
+
+
 ---
 
 
@@ -142,7 +147,7 @@ Using the fact above and iterated expectation,
 :::
 
 
-Now consider the general case when we have $K$ time points. First define the following conditional expectation as $\mu_{\overline{a_{K}}} (\overline{x_{K}})$ for simplicity.
+Now consider the general case when we have $K$ time points. First define the following conditional expectation as $\mu_{\overline{a_{K}}} (\overline{x_{K}})$ for simplicity and introduce the lemma for identification with $K$ time points.
 
 \begin{align*}
 \mu_{\overline{a_{K}}} (\overline{x_{K}}) := \mathbb{E}[Y | \overline{X_{K}} = \overline{x_{K}}, \overline{A_{K}}= \overline{a_{K}}].
