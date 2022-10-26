@@ -37,13 +37,6 @@ links:
 <li><span class="math inline">\(\overline{a_{k}} = (a_{1}, \cdots, a_{k})\)</span> : a possible treatment history through decision <span class="math inline">\(k\)</span> taking values in <span class="math inline">\(\overline{\mathcal{A}_{k}} = \mathcal{A}_{1} \times \cdots \mathcal{A}_{k}\)</span>.</li>
 </ul>
 </blockquote>
-<p>For example, when <span class="math inline">\(k=2\)</span>, we have time-ordered variables <span class="math inline">\((X_{1}, A_{1}, X_{2}, A_{2}, Y)\)</span>, where the dependency between them can be described as the following dynamic acyclic graph (DAG):</p>
-<center>
-<div class="figure">
-<img src="figures/dag.png" style="width:80.0%" alt="" />
-<p class="caption">Figure 1. Dynamic acyclic graph for k = 2</p>
-</div>
-</center>
 <blockquote>
 <p>Then we define the <strong>potential outcomes</strong>
 <span class="math display">\[\begin{align*}
@@ -84,7 +77,7 @@ W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdo
 \end{align*}\]</span></p>
 <hr />
 </div>
-<div id="model-setup-and-assumptions" class="section level3">
+<div id="Model_Setup_and_Assumptions" class="section level3">
 <h3>Model Setup and Assumptions</h3>
 <p>The problem is that potential outcomes for an individual patient for all <span class="math inline">\(\mathbf{d} \in \mathcal{D}\)</span> may not be observed. Therefore, the goal of dynamic treatment regime is to estimate <span class="math inline">\(\mathbf{d}^{opt}\)</span> based on data. Consider a study with a random sample of <span class="math inline">\(n\)</span> patients in <span class="math inline">\(\Omega\)</span>. Assume independent and identically distributed time-ordered random variables <span class="math inline">\((X_{1i}, A_{1i}, \cdots, X_{Ki}, A_{Ki}, Y_{i}), i = 1, \cdots, n\)</span>.</p>
 <p>Use causal framework to estimate an optimal regime from the observed data under the following assumptions:</p>
@@ -97,34 +90,40 @@ W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdo
 </div>
 <div id="identification" class="section level3">
 <h3>Identification</h3>
-<p>In this section, we first consider a fixed treatment <span class="math inline">\((a_{1}, a_{2}) \in \{0, 1\}^{2}\)</span> with the two time points <span class="math inline">\((k = 2)\)</span>. We are interested in estimating the expected potential outcome <span class="math inline">\(\mathbb{E}[Y(a_{1},a_{2})]\)</span> of treatment <span class="math inline">\((a_{1},a_{2})\)</span> which may or may not be observable based on statistical quantity.</p>
-<p>From the following lemma below, we show that the expected potential outcome of <span class="math inline">\((a_{1}, a_{2})\)</span> can be identified as a statistical estimand, a function of conditional expectation.</p>
+<p>In this section, we are interested in identifying the expected potential outcome <span class="math inline">\(\mathbb{E}[Y^{*}(\overline{a_{K}})]\)</span> which may or may not be observable based on statistical quantity.</p>
+<p>We first consider a fixed treatment <span class="math inline">\((a_{1}, a_{2}) \in \{0, 1\}^{2}\)</span> with the two time points <span class="math inline">\((k = 2)\)</span>. We have time-ordered variables <span class="math inline">\((X_{1}, A_{1}, X_{2}, A_{2}, Y)\)</span>, where the dependency between them can be described as the following dynamic acyclic graph (DAG):</p>
+<center>
+<div class="figure">
+<img src="figures/dag.png" style="width:80.0%" alt="" />
+<p class="caption">Figure 1. Dynamic acyclic graph for k = 2</p>
+</div>
+</center>
+<p>From the following lemma below, we show that the expected potential outcome <span class="math inline">\(\mathbb{E}[Y^{*}(\overline{a_{2}})]=\mathbb{E}[Y^{*}(a_{1}, a_{2})]\)</span> of treatment <span class="math inline">\((a_{1}, a_{2})\)</span> can be identified as a statistical estimand, a function of conditional expectation.</p>
 <p><br />
 </p>
 <div class="lemma">
-<p><span id="lem:unlabeled-div-1" class="lemma"><strong>Lemma 1  </strong></span><em>Fix a treatment <span class="math inline">\((a_{1},a_{2})\in \{0,1\}^{2}\)</span>. Then we have</em>
+<p><span id="lem:unlabeled-div-1" class="lemma"><strong>Lemma 1  </strong></span><em>Fix a treatment <span class="math inline">\((a_{1},a_{2})\in \{0,1\}^{2}\)</span>. Under the assumptions of consistency, SUTVA, and sequential ignorability mentioned in the section <a href="#Model_Setup_and_Assumptions">Model setup and assumptions</a>, we have</em>
 <span class="math display">\[\begin{align*}
-&amp; \mathbb{E}[Y(a_1, a_2)] = \mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \mathbb{E}_{Y}[Y | X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2}] \bigg| X_{1}, A_{1} = a_{1} \bigg] \bigg]
+&amp;\mathbb{E}[Y^{*}(a_1, a_2)] \\
+&amp; \quad = \mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \mathbb{E}_{Y}[Y | X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2}] \bigg| X_{1}, A_{1} = a_{1} \bigg] \bigg] \\
+&amp; \quad = \int_{x_{1}} \int_{x_{2}} \mathbb{E}_{Y}[Y | X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2}] \,\, \mathbb{P}\left(X_{2}=x_{2}|X_{1}=x_{1}, A_{1} = a_{1} \right) \mathbb{P}\left(X_{1}=x_{1}\right)dx_{2}dx_{1}.
 \end{align*}\]</span></p>
 </div>
 <div class="proof">
-<p><span id="unlabeled-div-2" class="proof"><em>Proof</em>. </span><span class="math inline">\({}\)</span></p>
-<p>From sequential ignorability assumption, we have <span class="math inline">\(Y(a_1, a_2) \perp A_{1} | X_{1}\)</span> and <span class="math inline">\(Y(a_1, a_2) \perp A_{2} | \{(X_{1}, X_{2}), A_{1}\}\)</span>. Also, you may notice that <span class="math inline">\(X_{2}=X_{2}(a_{1})\)</span>. Then
+<p><span id="unlabeled-div-2" class="proof"><em>Proof</em>. </span><span class="math inline">\({}\)</span>
+Here, let us denote <span class="math inline">\(X^{*}_{2} := X^{*}_{2}(a_{1})\)</span> and <span class="math inline">\(Y^{*} := Y^{*}(a_1, a_2)\)</span>, which we will be using when these random variables are in subscripts for simplicity. Then
 <span class="math display">\[\begin{align*}
-    &amp;\mathbb{E}[Y(a_1, a_2) | X_{1} = x_{1}, X_{2}(a_{1}) = x_{2} ] \\
-    &amp;\qquad = \mathbb{E}[Y(a_1, a_2) | X_{1} = x_{1}, X_{2} = x_{2}, A_{1} = a_{1}, A_{2} = a_{2} ]  \quad (\because \text{sequential ignorability}) \\
-    &amp;\qquad = \mathbb{E}[Y | X_{1} = x_{1}, A_{1} = a_{1}, X_{2} = x_{2},  A_{2} = a_{2} ] \quad \quad \, \qquad (\because \text{consistency})
+&amp;\mathbb{E}[Y^{*}(a_1, a_2)] \\
+&amp;\quad =\mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X^{*}_{2},Y^{*}}[Y^{*}(a_1, a_2) | X_{1}]\bigg] \\
+&amp;\quad \overset{(a)}{=}\mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X^{*}_{2},Y^{*}}[Y^{*}(a_1, a_2) | X_{1}, A_{1} = a_{1}]\bigg] \\
+&amp;\quad \overset{(b)}{=}\mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X^{*}_{2}} \bigg[ \mathbb{E}_{Y^{*}}[Y^{*}(a_1, a_2) | X_{1}, A_{1} = a_{1}, X^{*}_{2}(a_{1})] \bigg| X_{1}, A_{1} = a_{1}\bigg] \bigg] \\
+&amp;\quad \overset{(c)}{=}\mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X^{*}_{2}} \bigg[ \mathbb{E}_{Y^{*}}[Y^{*}(a_1, a_2) | X_{1}, A_{1} = a_{1}, X^{*}_{2}(a_{1}), A_{2} = a_{2}] \bigg| X_{1}, A_{1} = a_{1}\bigg] \bigg]  \\
+&amp;\quad \overset{(d)}{=}\mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \mathbb{E}_{Y}[Y| X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2}] \bigg| X_{1}, A_{1} = a_{1}\bigg] \bigg] \\
+&amp;\quad =  \int_{x_{1}} \int_{x_{2}} \mathbb{E}[Y | X_{1} = x_{1}, A_{1} = a_{1}, X_{2} = x_{2}, A_{2} = a_{2}] \mathbb{P}\left(X_{2} = x_{2} | X_{1} = x_{1}, A_{1} = a_{1}\right) \mathbb{P}(X_{1} = x_{1}) dx_{2} dx_{1}, \\
 \end{align*}\]</span>
-We also remark that the last equality above can be derived using the <span class="math inline">\(g\)</span>-formula.</p>
-<p>Using the fact above and iterated expectation,
+where (a) and (c) use sequential ignorability, (b) uses iterated expectation, and (d) use consistency.
 <span class="math display">\[\begin{align*}
-&amp;\mathbb{E}[Y(a_1, a_2)] \\
-&amp;\qquad = \mathbb{E}_{(X_{1}, X_{2}(a_{1})))} \bigg[ \underbrace{\mathbb{E}_{Y} \bigg[ Y(a_1, a_2) | X_{1}, X_{2}(a_{1}) \bigg]}_{=:g\left(X_{1}, X_{2} (a_{1}) \right)} \bigg] \\
-&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}(a_{1})\right) | X_{1} \right] \right] \\
-&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}(a_{1})\right) | X_{1}, A_{1} = a_{1} \right] \right] \quad \,\, (\because \text{sequential ignorability}) \\
-&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}(a_{1})} \left[ g\left(X_{1}, X_{2}\right) | X_{1}, A_{1} = a_{1} \right] \right] \qquad \quad (\because \text{consistency}) \\
-&amp;\qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{X_{2}} \left[ \mathbb{E}[Y | X_{1}, A_{1} = a_{1}, X_{2},  A_{2} = a_{2} ] | X_{1}, A_{1} = a_{1} \right] \right]. \\
-&amp; \hspace{12cm} \square
+\hspace{15cm} \square
 \end{align*}\]</span></p>
 </div>
 <p>Now consider the general case when we have <span class="math inline">\(K\)</span> time points. First define the following conditional expectation as <span class="math inline">\(\mu_{\overline{a_{K}}} (\overline{x_{K}})\)</span> for simplicity and introduce the lemma for identification with <span class="math inline">\(K\)</span> time points.</p>
@@ -134,10 +133,53 @@ We also remark that the last equality above can be derived using the <span class
 <p><br />
 </p>
 <div class="lemma">
-<p><span id="lem:unlabeled-div-3" class="lemma"><strong>Lemma 2  </strong></span><em>Fix a treatment <span class="math inline">\(\overline{a_{K}}=(a_{1},\cdots,a_{K})\in \{0,1\}^{K}\)</span>. Then we have</em>
+<p><span id="lem:unlabeled-div-3" class="lemma"><strong>Lemma 2  </strong></span><em>Fix a treatment <span class="math inline">\(\overline{a_{K}}=(a_{1},\cdots,a_{K})\in \{0,1\}^{K}\)</span>. Under the assumptions of consistency, SUTVA, and sequential ignorability, we have</em>
 <span class="math display">\[\begin{align*}
-\mathbb{E}[Y(\overline{a_{K}})] = \mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \cdots \left[ \mu_{\overline{a_{K}}} (\overline{X_{K}}) | \overline{X_{K-1}}, \overline{A_{k-1}} = \overline{a_{k-1}} \right] \bigg] \bigg| \overline{X_{K-2}}, \overline{A_{k-2}} = \overline{a_{k-2}} \bigg] \cdots \bigg| X_{1}, A_{1} = a_{1} \bigg] \bigg]
+&amp;\mathbb{E}[Y^{*}(\overline{a_{K}})] \\
+&amp;\quad = \mathbb{E}_{X_{1}} \bigg[ \mathbb{E}_{X_{2}} \bigg[ \cdots
+\bigg[ \mathbb{E}_{X_{K}}\left[ \mathbb{E}\left[Y \bigg| \begin{matrix} \overline{X_{K}} \\ \overline{A_{K}} = \overline{a_{K}} \end{matrix}\right]
+\bigg| \begin{matrix} \overline{X_{K-1}} \\ \overline{A_{k-1}} = \overline{a_{k-1}} \end{matrix} \right]  
+\bigg| \begin{matrix} \overline{X_{K-2}} \\ \overline{A_{k-2}} = \overline{a_{k-2}} \end{matrix} \bigg] \cdots
+\bigg| \begin{matrix} X_{1} \\ A_{1} = a_{1} \end{matrix}\bigg] \bigg]
 \end{align*}\]</span></p>
 </div>
-<p>We can prove this similarly to the above proof or by using g-formula.</p>
+<div class="proof">
+<p><span id="unlabeled-div-4" class="proof"><em>Proof</em>. </span><span class="math inline">\({}\)</span></p>
+<p>The idea of the proof is to use induction on the number of unobserved treatments. Let us define the following quantities:
+<span class="math display">\[\begin{align*}
+\mathcal{F}_{k} &amp;: \sigma \text{-algebra generated by information up to } k , \\
+\overline{Z_{[k+1,K]}} &amp;= (Z_{k+1}, Z_{k+2}, \cdots, Z_{K}).
+\end{align*}\]</span>
+We prove the following stronger claim:</p>
+<p>For <span class="math inline">\(k \in \{0, 1, \cdots, K \}\)</span>,
+<span class="math display">\[\begin{align*}
+&amp;\mathbb{E}\left[ Y^{*}(\overline{A_{k}}, \overline{a_{[k+1,K]}}) \bigg|\mathcal{F}_{k}\right]
+= \mathbb{E}_{X_{k+1}}\left[ \mathbb{E}_{X_{k+2}}
+\left[ \cdots \left[ \mathbb{E}\left[Y \bigg| \begin{matrix} \overline{X_{[k+1, K]}} \\ \overline{A_{[k+1, K]}} = \overline{a_{[k+1,T]}} \\ \mathcal{F}_{k} \end{matrix}\right] \bigg| \right] \cdots \right]
+\bigg| \begin{matrix} \overline{X_{k+1}} \\ \overline{A_{k+1}} = \overline{a_{k+1}} \\ \mathcal{F}_{k} \end{matrix}
+\right]
+\end{align*}\]</span>
+Then the statement follows by taking <span class="math inline">\(k=0\)</span>. We use induction on <span class="math inline">\(K-k=\)</span> the number of unobserved treatment.</p>
+<p>First, Let <span class="math inline">\(k = K\)</span>. Since we have all information up to K and there is no counterfactual outcome,
+<span class="math display">\[\begin{align*}
+&amp; \mathbb{E}[Y^{*}(A_{1}, \cdots, A_{K})|\mathcal{F}_{K}]  = \mathbb{E}[Y|\overline{X_{K}}, \overline{A_{K}}, \mathcal{F}_{K}]. \\
+\end{align*}\]</span></p>
+<p>Next, assume induction hypothesis for <span class="math inline">\(k\)</span> holds. We wish to show induction hypothesis holds for <span class="math inline">\(k-1\)</span>.
+<span class="math display">\[\begin{align*}
+&amp; \mathbb{E}[Y^{*}(A_{1}, \cdots, A_{k-1}, a_{k}, \cdots, a_{K}) | \mathcal{F}_{k-1}] \\
+&amp; \quad \overset{(a)}{=} \mathbb{E}_{X_{k}} \left[ \mathbb{E} \left[ Y^{*}(A_{1}, \cdots, A_{k-1}, a_{k}, \cdots, a_{K}) \bigg| X_{k}, \mathcal{F}_{k-1} \right] \right] \\
+&amp; \quad \overset{(b)}{=} \mathbb{E}_{X_{k}} \left[ \mathbb{E} \left[ Y^{*}(A_{1}, \cdots, A_{k-1}, a_{k}, \cdots, a_{K}) \bigg| X_{k}, \overline{A_{k}} = \overline{a_{k}}, \mathcal{F}_{k-1} \right] \right] \\
+&amp; \quad = \mathbb{E}_{X_{k}} \left[ \mathbb{E} \left[ Y^{*}(A_{1}, \cdots, A_{k-1}, A_{k}, \cdots, a_{K}) \bigg| X_{k}, \overline{A_{k}} = \overline{a_{k}}, \mathcal{F}_{k-1} \right] \right] \\
+&amp; \quad \overset{(c)}{=} \mathbb{E}_{X_{k}} \left[ \mathbb{E} \left[ Y^{*}(A_{1}, \cdots, A_{k-1}, A_{k}, \cdots, a_{K}) \bigg| \mathcal{F}_{k} \right] \right] \\
+&amp; \quad = \mathbb{E}_{X_{k}} \left[ \mathbb{E} \left[ Y^{*}(A_{1}, \cdots, A_{k}, a_{k+1}, \cdots, a_{K}) \bigg|  \mathcal{F}_{k} \right] \right] \\
+&amp; \quad \overset{(d)}{=} \mathbb{E}_{X_{k}} \left[ \mathbb{E}_{X_{k+1}}\left[ \mathbb{E}_{X_{k+2}}
+\left[ \cdots \left[ \mathbb{E}\left[Y \bigg| \begin{matrix} \overline{X_{[k+1, K]}} \\ \overline{A_{[k+1, K]}} = \overline{a_{[k+1,T]}} \\ \mathcal{F}_{k} \end{matrix}\right] \bigg| \right] \cdots \right]
+\bigg| \begin{matrix} \overline{X_{k+1}} \\ \overline{A_{k+1}} = \overline{a_{k+1}} \\ \mathcal{F}_{k} \end{matrix}
+\right] \right]
+\end{align*}\]</span>
+where (a) uses iterated expectation, (b) uses sequential ignorability, (c) uses no unmeasured confounder assumption in SUTVA, and (d) is from the assumed induction hypothesis. Since it holds for <span class="math inline">\(k-1\)</span>, we are done.
+<span class="math display">\[\begin{align*}
+\hspace{12.5cm} \square
+\end{align*}\]</span></p>
+</div>
 </div>
