@@ -106,9 +106,9 @@ In this section, we are interested in identifying the expected potential outcome
 
 We first consider a fixed treatment $(a_{1}, a_{2}) \in \{0, 1\}^{2}$ with the two time points $(k = 2)$. We have time-ordered variables $(X_{1}, A_{1}, X_{2}, A_{2}, Y)$, where the dependency between them can be described as the following dynamic acyclic graph (DAG):
 
-<center>
-![Figure 1. Dynamic acyclic graph for k = 2](figures/dag.png){width=80%}
-</center>
+```{r dag, fig.cap="Dynamic acyclic graph for k = 2", fig.align = 'center', , out.width = '50%', echo = F}
+knitr::include_graphics("figures/dag.png")
+```
 
 From the following lemma below, we show that the expected potential outcome  $\mathbb{E}[Y^{*}(\overline{a_{2}})]=\mathbb{E}[Y^{*}(a_{1}, a_{2})]$ of treatment $(a_{1}, a_{2})$ can be identified as a statistical estimand, a function of conditional expectation.
 
@@ -143,11 +143,7 @@ where (a) and (c) use sequential ignorability, (b) uses iterated expectation, an
 \end{align*}
 :::
 
-Now consider the general case when we have $K$ time points. First define the following conditional expectation as $\mu_{\overline{a_{K}}} (\overline{x_{K}})$ for simplicity and introduce the lemma for identification with $K$ time points.
-
-\begin{align*}
-\mu_{\overline{a_{K}}} (\overline{x_{K}}) := \mathbb{E}[Y | \overline{X_{K}} = \overline{x_{K}}, \overline{A_{K}}= \overline{a_{K}}].
-\end{align*}
+Now consider the general case when we have $K$ time points. We have time-varying variables $(X_{1}, A_{1}, \cdots, X_{K}, A_{K}, Y)$, assuming all dependencies between variables with proper temporal orders as shown in Figure \@ref(fig:dag). Then we introduce the lemma for identification with $K$ time points.
 
 \
 
