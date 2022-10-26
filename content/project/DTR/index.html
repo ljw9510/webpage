@@ -92,12 +92,12 @@ W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdo
 <h3>Identification</h3>
 <p>In this section, we are interested in identifying the expected potential outcome <span class="math inline">\(\mathbb{E}[Y^{*}(\overline{a_{K}})]\)</span> which may or may not be observable based on statistical quantity.</p>
 <p>We first consider a fixed treatment <span class="math inline">\((a_{1}, a_{2}) \in \{0, 1\}^{2}\)</span> with the two time points <span class="math inline">\((k = 2)\)</span>. We have time-ordered variables <span class="math inline">\((X_{1}, A_{1}, X_{2}, A_{2}, Y)\)</span>, where the dependency between them can be described as the following dynamic acyclic graph (DAG):</p>
-<center>
-<div class="figure">
-<img src="figures/dag.png" style="width:80.0%" alt="" />
-<p class="caption">Figure 1. Dynamic acyclic graph for k = 2</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:dag"></span>
+<img src="figures/dag.png" alt="Dynamic acyclic graph for k = 2" width="50%" />
+<p class="caption">
+Figure 1: Dynamic acyclic graph for k = 2
+</p>
 </div>
-</center>
 <p>From the following lemma below, we show that the expected potential outcome <span class="math inline">\(\mathbb{E}[Y^{*}(\overline{a_{2}})]=\mathbb{E}[Y^{*}(a_{1}, a_{2})]\)</span> of treatment <span class="math inline">\((a_{1}, a_{2})\)</span> can be identified as a statistical estimand, a function of conditional expectation.</p>
 <p><br />
 </p>
@@ -126,10 +126,7 @@ where (a) and (c) use sequential ignorability, (b) uses iterated expectation, an
 \hspace{15cm} \square
 \end{align*}\]</span></p>
 </div>
-<p>Now consider the general case when we have <span class="math inline">\(K\)</span> time points. First define the following conditional expectation as <span class="math inline">\(\mu_{\overline{a_{K}}} (\overline{x_{K}})\)</span> for simplicity and introduce the lemma for identification with <span class="math inline">\(K\)</span> time points.</p>
-<p><span class="math display">\[\begin{align*}
-\mu_{\overline{a_{K}}} (\overline{x_{K}}) := \mathbb{E}[Y | \overline{X_{K}} = \overline{x_{K}}, \overline{A_{K}}= \overline{a_{K}}].
-\end{align*}\]</span></p>
+<p>Now consider the general case when we have <span class="math inline">\(K\)</span> time points. We have time-varying variables <span class="math inline">\((X_{1}, A_{1}, \cdots, X_{K}, A_{K}, Y)\)</span>, assuming all dependencies between variables with proper temporal orders as shown in Figure <a href="#fig:dag">1</a>. Then we introduce the lemma for identification with <span class="math inline">\(K\)</span> time points.</p>
 <p><br />
 </p>
 <div class="lemma">
