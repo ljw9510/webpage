@@ -20,11 +20,14 @@ links:
 <h3>List</h3>
 <p><a href="#overview">1. Overview</a></p>
 <p><a href="#identification">2. Identification</a></p>
+<p><a href="#optimal_treatment_regime">3. Optimal Treatment Regimes</a></p>
+<p><a href="#estimation">4. Estimation of Optimal Treatment Regimes</a></p>
+<p><a href="#simulation">5. Simlation Studies</a></p>
 <hr />
 </div>
 <div id="overview" class="section level3">
 <h3>Overview</h3>
-<p>In this project, we will review a paper <em>Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes</em> written by Phillip J. Schulte et al., (2014) <a href="https://pubmed.ncbi.nlm.nih.gov/25620840/">[paper]</a>.</p>
+<p>In this project, we will review a paper <em>Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes</em> written by Phillip J. Schulte et al., (2014) <a href="https://pubmed.ncbi.nlm.nih.gov/25620840/">[paper]</a>, focusing on Q-learning methods.</p>
 <p>In clinical practice, clinicians make a series of decisions based on individual patient’s baseline and evolving characteristics. In this paper, we wanted to make optimal sequential treatment decisions to achieve the ‘best’ outcome for an individual patient. The list of sequential decision rules is formalized as a dynamic treatment regime. Throughout this paper, we investigate two main methods, Q-learning and A-learning, to estimate the optimal dynamic treatment regime based on data from a clinical trial or observational study.</p>
 <p>Let us first introduce the following notations:</p>
 <blockquote>
@@ -43,7 +46,7 @@ links:
 W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big), Y^{*}\big(\overline{a_{k}}\big) \,\, \text{ for all } \, \overline{a_{k}} \in \overline{\mathcal{A}_{k}} \right\}
 \end{align*}\]</span></p>
 </blockquote>
-<p>Here, <span class="math inline">\(X^{*}_{K}\big(\overline{a_{k-1}}\big)(\omega)\)</span> denotes the value of covariate information that would arise between decisions <span class="math inline">\(k-1\)</span> and <span class="math inline">\(k\)</span> for a patient <span class="math inline">\(\omega \in \Omega\)</span> who have received treatment history <span class="math inline">\(\overline{a_{k-1}}\)</span>, taking value <span class="math inline">\(x_{k}\)</span> in a set <span class="math inline">\(\mathcal{X}_{k}\)</span>. Similarly, <span class="math inline">\(Y^{*}\big(\overline{a_{k}}\big)\)</span> is the hypothetical outcome that would result for a patient <span class="math inline">\(\omega\)</span> who have received the full set of <span class="math inline">\(K\)</span> treatment in <span class="math inline">\(\overline{a_{k}}\)</span>. For simplicity, we write <span class="math inline">\(\overline{X}^{*}_{\underline{k}}\big(\overline{a_{k-1}}\big)=\{X_{1}, X^{*}_{2}(a_{1}), \cdots, X^{*}_{K}\big(\overline{a_{k-1}}\big)\}, k = 1, \cdots, K\)</span>.</p>
+<p>Here, <span class="math inline">\(X^{*}_{K}\big(\overline{a_{k-1}}\big)(\omega)\)</span> denotes the value of covariate information that would arise between decisions <span class="math inline">\(k-1\)</span> and <span class="math inline">\(k\)</span> for a patient <span class="math inline">\(\omega \in \Omega\)</span> who have received treatment history <span class="math inline">\(\overline{a_{k-1}}\)</span>, taking value <span class="math inline">\(x_{k}\)</span> in a set <span class="math inline">\(\mathcal{X}_{k}\)</span>. Similarly, <span class="math inline">\(Y^{*}\big(\overline{a_{k}}\big)\)</span> is the hypothetical outcome that would result for a patient <span class="math inline">\(\omega\)</span> who have received the full set of <span class="math inline">\(K\)</span> treatment in <span class="math inline">\(\overline{a_{k}}\)</span>. For simplicity, we write <span class="math inline">\(\overline{X}^{*}_{\underline{k}}\big(\overline{a_{k-1}}\big)=\{X_{1}, X^{*}_{2}(a_{1}), \cdots, X^{*}_{k}\big(\overline{a_{k-1}}\big)\}, k = 1, \cdots, K\)</span>.</p>
 <hr />
 </div>
 <div id="dynamic-treatment-regime" class="section level3">
@@ -66,21 +69,22 @@ W^{*} &amp;= \left\{ X^{*}_{2}(a_{1}), X^{*}_{3}\big(\overline{a_{2}}\big), \cdo
 <blockquote>
 <p>Then, for any <span class="math inline">\(\mathbf{d} \in \mathcal{D}\)</span>, define the <strong>potential outcomes associated with <span class="math inline">\(\mathbf{d}\)</span></strong> as
 <span class="math display">\[\begin{align*}
-\left\{ X^{*}_{2}(d_{1}),  \cdots, X^{*}_{k}\big(\overline{d_{k-1}}\big), \cdots,  X^{*}_{K}\big(\overline{d_{k-1}}\big), Y^{*}\big(\mathbf{d}\big) \,\, \right\}
+\left\{ X^{*}_{2}(d_{1}),  \cdots, X^{*}_{k}\big(\overline{d_{k-1}}\big), \cdots,  X^{*}_{K}\big(\overline{d_{K-1}}\big), Y^{*}\big(\mathbf{d}\big) \,\, \right\}
 \end{align*}\]</span></p>
 </blockquote>
 <p>Then how can we find an optimal regime (the ‘best’ treatment for a patient) with these definitions?</p>
-<p>The expected outcome in the population with all patients who have a baseline covariate <span class="math inline">\(X_{1} = x_{1}\)</span> and follow regime <span class="math inline">\(\mathbf{d}\)</span> is <span class="math inline">\(\mathbb{E}[Y^{*}\big(\mathbf{d}\big)\ | X_{1} = x_{1}]\)</span>. Then an optimal regime, <span class="math inline">\(\mathbf{d}^{opt} \in \mathcal{D}\)</span>, should satisfies</p>
+<p>The expected outcome in the population if all patients who have a baseline covariate <span class="math inline">\(X_{1} = x_{1}\)</span> were to follow regime <span class="math inline">\(\mathbf{d}\)</span> is <span class="math inline">\(\mathbb{E}[Y^{*}\big(\mathbf{d}\big)\ | X_{1} = x_{1}]\)</span>. Then an optimal regime, <span class="math inline">\(\mathbf{d}^{opt} \in \mathcal{D}\)</span>, should satisfy</p>
 <p><span class="math display">\[\begin{align*}
 &amp; \mathbb{E}[Y^{*}\big(\mathbf{d}\big)\ | X_{1} = x_{1}] \quad \le \quad \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)\ | X_{1} = x_{1}], \,\, \text{ for all } \mathbf{d} \in \mathcal{D} \text{ and all } x_{1} \in \mathcal{X}_{1} \\
 \Rightarrow \,\, &amp; \mathbb{E}[Y^{*}\big(\mathbf{d}\big)] \qquad \qquad \quad \, \le \quad \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)], \qquad \quad \quad \,\, \text{ for all } \mathbf{d} \in \mathcal{D}
 \end{align*}\]</span></p>
+<p>the first inequality implies the second one since it is true for any fixed <span class="math inline">\(x_{1} \in \mathcal{X}_{1}\)</span>.</p>
 <hr />
 </div>
 <div id="Model_Setup_and_Assumptions" class="section level3">
 <h3>Model Setup and Assumptions</h3>
-<p>The problem is that potential outcomes for an individual patient for all <span class="math inline">\(\mathbf{d} \in \mathcal{D}\)</span> may not be observed. Therefore, the goal of dynamic treatment regime is to estimate <span class="math inline">\(\mathbf{d}^{opt}\)</span> based on data. Consider a study with a random sample of <span class="math inline">\(n\)</span> patients in <span class="math inline">\(\Omega\)</span>. Assume independent and identically distributed time-ordered random variables <span class="math inline">\((X_{1i}, A_{1i}, \cdots, X_{Ki}, A_{Ki}, Y_{i}), i = 1, \cdots, n\)</span>.</p>
-<p>Use causal framework to estimate an optimal regime from the observed data under the following assumptions:</p>
+<p>The problem is that potential outcomes for an individual patient for all <span class="math inline">\(\mathbf{d} \in \mathcal{D}\)</span> may not be observed. Therefore, the goal of dynamic treatment regime is to estimate <span class="math inline">\(\mathbf{d}^{opt}\)</span> based on data.</p>
+<p>Consider a study with a random sample of <span class="math inline">\(n\)</span> patients in <span class="math inline">\(\Omega\)</span>. Assume independent and identically distributed time-ordered random variables <span class="math inline">\((X_{1i}, A_{1i}, \cdots, X_{Ki}, A_{Ki}, Y_{i}), i = 1, \cdots, n\)</span> on <span class="math inline">\(\Omega\)</span>. Use causal framework to estimate an optimal regime from the observed data under the following assumptions:</p>
 <ul>
 <li>Consistency assumption : <span class="math inline">\(X_{k} = X^{*}_{k}\big(\overline{A_{k-1}}\big), k=2, \cdots, K\)</span> and <span class="math inline">\(Y=Y^{*}\big(\overline{A_{k}}\big)\)</span>,</li>
 <li>Stable unit treatment value assumption (well-defineness) : a patient’s covariates and outcome are not affected by treatment assignment and other patients,</li>
@@ -126,6 +130,10 @@ where (a) and (c) use sequential ignorability, (b) uses iterated expectation, an
 \hspace{15cm} \square
 \end{align*}\]</span></p>
 </div>
+<p>Now consider the general case when we have <span class="math inline">\(K\)</span> time points. First define the following conditional expectation as <span class="math inline">\(\mu_{\overline{a_{K}}} (\overline{x_{K}})\)</span> for simplicity and introduce the lemma for identification with <span class="math inline">\(K\)</span> time points.</p>
+<p><span class="math display">\[\begin{align*}
+\mu_{\overline{a_{K}}} (\overline{x_{K}}) := \mathbb{E}[Y | \overline{X_{K}} = \overline{x_{K}}, \overline{A_{K}}= \overline{a_{K}}].
+\end{align*}\]</span></p>
 <p>Now consider the general case when we have <span class="math inline">\(K\)</span> time points. We have time-varying variables <span class="math inline">\((X_{1}, A_{1}, \cdots, X_{K}, A_{K}, Y)\)</span>, assuming all dependencies between variables with proper temporal orders as shown in Figure <a href="#fig:dag">1</a>. Then we introduce the lemma for identification with <span class="math inline">\(K\)</span> time points.</p>
 <p><br />
 </p>
@@ -140,6 +148,10 @@ where (a) and (c) use sequential ignorability, (b) uses iterated expectation, an
 \bigg| \begin{matrix} X_{1} \\ A_{1} = a_{1} \end{matrix}\bigg] \bigg]
 \end{align*}\]</span></p>
 </div>
+<details>
+<summary>
+Click for proof
+</summary>
 <div class="proof">
 <p><span id="unlabeled-div-4" class="proof"><em>Proof</em>. </span><span class="math inline">\({}\)</span></p>
 <p>The idea of the proof is to use induction on the number of unobserved treatments. Let us define the following quantities:
@@ -179,4 +191,229 @@ where (a) uses iterated expectation, (b) uses sequential ignorability, (c) uses 
 \hspace{12.5cm} \square
 \end{align*}\]</span></p>
 </div>
+</details>
+<hr />
+</div>
+<div id="optimal_treatment_regime" class="section level3">
+<h3>Optimal Treatment Regimes</h3>
+<p>Q- and A-learning are two approaches to estimate <span class="math inline">\(d^{opt}\)</span> satisfying <span class="math inline">\(\mathbb{E}[Y^{*}\big(\mathbf{d}\big)] \le \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)], \text{ for all } \mathbf{d} \in \mathcal{D}\)</span> which involve recursive algorithms.</p>
+<p>In this section, we demonstrate the formulation of <span class="math inline">\(d^{opt}\)</span> in terms of the potential outcomes and then show how <span class="math inline">\(d^{opt}\)</span> may be expressed in terms of the observed data under assumptions described in the section <a href="#Model_Setup_and_Assumptions">Model setup and Assumptions</a>.</p>
+<blockquote>
+<p>At the <span class="math inline">\(K\)</span>th decision point, for any <span class="math inline">\((\overline{x_{K}}, \overline{a_{K-1}}) \in \Gamma_{K}\)</span>, define
+<span class="math display">\[\begin{align*}
+d^{opt}_{K}(\overline{x_{K}}, \overline{a_{K-1}}) &amp;= \argmax_{a_{K} \in \Psi_{K}(\overline{x_{K}}, \overline{a_{K-1}})} \mathbb{E}[Y^{*}(\overline{a_{K-1}}, a_{K}) | \overline{X}_{K}^{*}(\overline{a_{K-1}}) = \overline{x_{K}}], \\
+V_{K}^{}(\overline{x_{K}}, \overline{a_{K-1}}) &amp;= \max_{a_{K} \in \Psi_{K}(\overline{x_{K}}, \overline{a_{K-1}})} \mathbb{E}[Y^{*}(\overline{a_{K-1}}, a_{K}) | \overline{X}_{K}^{*}(\overline{a_{K-1}}) = \overline{x_{K}}].
+\end{align*}\]</span></p>
+</blockquote>
+<p>Here, <span class="math inline">\(d^{opt}_{K}\)</span> is the treatment that maximizes the expected potential final outcome given the prior potential information, and <span class="math inline">\(V_{K}\)</span> is the achieved maximum.</p>
+<blockquote>
+<p>For <span class="math inline">\(k = K-1, \cdots, 1\)</span>, and any <span class="math inline">\((\overline{x_{k}}, \overline{a_{k-1}}) \in \Gamma_{k}\)</span>, let
+<span class="math display">\[\begin{align*}
+d^{opt}_{k}(\overline{x_{k}}, \overline{a_{k-1}}) &amp;= \argmax_{a_{k} \in \Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}})} \mathbb{E} \left[ V_{k+1}^{} \left(\underbrace{\overline{x_{k}}, X^{*}_{k+1}(\overline{a_{k-1}},a_{k})}_{=\overline{X}_{k+1}^{*} (\overline{a_{k}})}, \underbrace{\overline{a_{k-1}}, a_{k}}_{=\overline{a_{k}}} \right)  \bigg| \overline{X}_{k}^{*}(\overline{a_{k-1}}) = \overline{x_{k}} \right], \\
+V_{k}^{}(\overline{x_{k}}, \overline{a_{k-1}}) &amp;= \max_{a_{k} \in \Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}})} \mathbb{E} \left[ V_{k+1}^{} \left(\underbrace{\overline{x_{k}}, X^{*}_{k+1}(\overline{a_{k-1}},a_{k})}_{ = \overline{X}_{k+1}^{*} (\overline{a_{k}})}, \underbrace{\overline{a_{k-1}}, a_{k}}_{=\overline{a_{k}}} \right)  \bigg| \overline{X}_{k}^{*}(\overline{a_{k-1}}) = \overline{x_{k}} \right].
+\end{align*}\]</span></p>
+</blockquote>
+<p>Similarly, <span class="math inline">\(d^{opt}_{k}\)</span> is the <span class="math inline">\(k\)</span>th treatment that maximizes the <span class="math inline">\(k+1\)</span>th expected outcome that would be achieved if subsequent optimal rules already defined were followed henceforth. It shows how <span class="math inline">\(\mathbf{d}^{opt}=(d^{opt}_{1}, d^{opt}_{2}, \cdots, d^{opt}_{K})\)</span> is determined via backward induction, also known as dynamic programming. Proof will be added to show that <span class="math inline">\(\mathbf{d}^{opt}\)</span> defined in the above steps satisfies the condition <span class="math inline">\(\mathbb{E}[Y^{*}\big(\mathbf{d}\big)] \le \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)], \text{ for all } \mathbf{d} \in \mathcal{D}\)</span>.</p>
+<hr />
+</div>
+<div id="estimation" class="section level3">
+<h3>Estimation of Optimal Treatment Regimes</h3>
+<p>If an optimal regime is to be identifiable, we can express <span class="math inline">\(\mathbf{d}^{opt}\)</span> in terms of the distribution of the observed i.i.d. data <span class="math inline">\((X_{1i}, A_{1i}, \cdots, X_{Ki}, A_{Ki}, Y_{i}), i = 1, \cdots, n\)</span>.</p>
+<blockquote>
+<p>Then at the <span class="math inline">\(K\)</span> th decision point, define
+<span class="math display">\[\begin{align*}
+Q_{K}(\overline{x_{K}}, \overline{a_{K}}) &amp;= \mathbb{E} [Y|\overline{X_{K}}=\overline{x_{K}}, \overline{A_{K}}=\overline{a_{K}}], \\
+d_{K}^{opt}(\overline{x_{K}}, \overline{a_{K-1}}) &amp;= \argmax_{a_{K} \in \Psi_{K}(\overline{x_{K}}, \overline{a_{K-1}})} Q_{K}(\overline{x_{K}}, \overline{a_{K-1}}, a_{K}), \\
+V_{K}(\overline{x_{K}}, \overline{a_{K-1}}) &amp;= \max_{a_{K} \in \Psi_{K}(\overline{x_{K}}, \overline{a_{K-1}})}Q_{K}(\overline{x_{K}}, \overline{a_{K-1}}, a_{K}).
+\end{align*}\]</span>
+and for <span class="math inline">\(k = K-1, \cdots, 1,\)</span>
+<span class="math display">\[\begin{align*}
+Q_{k}(\overline{x_{k}}, \overline{a_{k}}) &amp;= \mathbb{E} [V_{k+1}(\overline{x_{k}}, X_{k+1}, \overline{a_{k}}) | \overline{X_{k}}=\overline{x_{k}}, \overline{A_{k}}=\overline{a_{k}}], \\
+d_{k}^{opt}(\overline{x_{k}}, \overline{a_{k-1}}) &amp;= \argmax_{a_{k} \in \Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}})} Q_{k}(\overline{x_{k}}, \overline{a_{k-1}}, a_{k}), \\
+V_{k}(\overline{x_{k}}, \overline{a_{k-1}}) &amp;= \max_{a_{k} \in \Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}})} Q_{k}(\overline{x_{k}}, \overline{a_{k-1}}, a_{k}). \\
+\end{align*}\]</span></p>
+</blockquote>
+<p>Here, <span class="math inline">\(Q_{k}(\overline{x_{k}}, \overline{a_{k}})\)</span> are referred to as “Q-functions” viewed as measuring the <strong>quality</strong> associated with treatment <span class="math inline">\(a_{k}\)</span> at decision <span class="math inline">\(k\)</span> given the history up to that decision and then following the optimal regime therafter. <span class="math inline">\(V_{k}(\overline{x_{k}}, \overline{a_{k-1}})\)</span> are known as “value functions” viewed as the <strong>value</strong> of a patient’s history <span class="math inline">\(\overline{x_{k}}, \overline{a_{k-1}}\)</span> given that optimal decisions are made in the future.</p>
+<p>In order to estimate an optimal regime, the treatment options in <span class="math inline">\(\Psi\)</span> must be represented in the data, which implies for <span class="math inline">\((\overline{x_{k}}, \overline{a_{k-1}}) \in \Gamma_{k}, \text{ and }a_{k} \in \Psi_{k}(\overline{x_{k}}, \overline{a_{k-1}}),\)</span>
+<span class="math display">\[\begin{align*}
+\mathbb{P}[ A_{k} = a_{k} | \overline{X_{k}} = \overline{x_{k}}, \overline{A_{k-1}} = \overline{a_{k-1}}] &gt; 0,
+\end{align*}\]</span>
+for all <span class="math inline">\(k = 1, \cdots, K\)</span>.</p>
+<p>Then, estimation of <span class="math inline">\(\mathbf{d}^{opt}\)</span> may be accomplished via direct modeling and fitting of the Q-functions. Specifically, for <span class="math inline">\(k = K, K-1, \cdots, 1\)</span>, assume models <span class="math inline">\(Q_{k}(\overline{x_{k}}, \overline{a_{k}}; \xi_{k})\)</span> depending on a finite-dimensional parameter <span class="math inline">\(\xi_{k}\)</span>. The models may be linear or nonlinear in <span class="math inline">\(\xi_{k}\)</span>, and estimators <span class="math inline">\(\widehat{\xi_{k}}\)</span> can be obtained in a backward iteration for <span class="math inline">\(k = K, K-1, \cdots, 1\)</span> by solving suitable estimating equations including ordinary least squares (OLS) or weighted least squares (WLS) as follows.</p>
+<p><span class="math display">\[\begin{align*}
+\sum_{i=1}^n \frac{\partial Q_k\left(\overline{X_{k, i}}, \overline{A_{k,i}}; \xi_{k} \right)}{\partial \xi_{k}} \left[ \underbrace{\Sigma_{k}\left(\overline{X_{k, i}}, \overline{A_{k,i}} \right) }_{=: \text{Working Variance}} \right]^{-1} \left\{ \underbrace{\widetilde{V}_{(k+1), i}}_{=Y_{i} \text{ for } k=K} - Q_{k}\left(\overline{X_{k, i}}, \overline{A_{k,i}}; \xi_{k}\right) \right\} =0.
+\end{align*}\]</span></p>
+<blockquote>
+<ol style="list-style-type: decimal">
+<li><p>Solve the above estimating equations for <span class="math inline">\(k = K\)</span> in <span class="math inline">\(\xi_{K}\)</span> to obtain <span class="math inline">\(\widehat{\xi_{K}}\)</span>.</p>
+<ul>
+<li><span class="math inline">\(d_{K}^{opt}(\overline{x_{K}}, \overline{a_{K-1}}; \widehat{\xi_{K}}) = \argmax_{a_{K}} Q_{K}(\overline{x_{K}}, \overline{a_{K}}; \widehat{\xi_{K}})\)</span> : an estimator for the optimal treatment choice at decision <span class="math inline">\(K\)</span> for a patient with past history <span class="math inline">\(\overline{X_{K}}= \overline{x_{K}}, \overline{A_{K-1}}= \overline{a_{K-1}}\)</span>.</li>
+</ul></li>
+<li><p>Solve the estimating equation for <span class="math inline">\(k = K-1\)</span> with <span class="math inline">\(\widehat{\xi_{K-1}}\)</span> in <span class="math inline">\(\xi_{K-1}\)</span>.</p>
+<ul>
+<li>With <span class="math inline">\(\widehat{\xi_{K}}\)</span>, one would form
+<span class="math display">\[\begin{align*}
+\widetilde{V}_{K,i} = \max_{a_{K} \in \Psi_{K}}Q_{K} \left(\overline{X_{K,i}}, \overline{A_{(K-1),i}}, a_{K}; \widehat{\xi_{K}} \right) \text{ for each } i.
+\end{align*}\]</span></li>
+<li><span class="math inline">\(d_{K-1}^{opt}(\overline{x_{K-1}}, \overline{a_{K-2}}; \widehat{\xi_{K-1}}) = \argmax_{a_{K-1}} Q_{K-1}(\overline{x_{K-1}}, \overline{a_{K-1}}; \widehat{\xi_{K-1}})\)</span>: an estimator for the optimal treatment choice at decision <span class="math inline">\(K-1\)</span> for a patient with past history <span class="math inline">\(\overline{X_{K-1}}= \overline{x_{K-1}}, \overline{A_{K-2}}= \overline{a_{K-2}}\)</span>, assuming that a patient will take the optimal treatment at decision <span class="math inline">\(K\)</span>.</li>
+</ul></li>
+<li><p>Continue this process in the backward manner for <span class="math inline">\(k= K-2, \cdots, 1\)</span>.</p></li>
+</ol>
+</blockquote>
+<p>Then we may summarize the estimated optimal regime as <span class="math inline">\(\widehat{\mathbf{d}}^{opt} = (\widehat{d}^{opt}_{1}, \widehat{d}^{opt}_{2}, \cdots, \widehat{d}^{opt}_{K})\)</span>, where
+<span class="math display">\[\begin{align*}
+&amp; \widehat{d}^{opt}_{1}(x_{1}) = d_{1}^{opt}(x_{1}; \widehat{\xi_{1}}), \\
+&amp; \widehat{d}^{opt}_{k}(\overline{x_{k}}, \overline{a_{k-1}}) = d_{k}^{opt}(\overline{x_{k}}, \overline{a_{k-1}}; \widehat{\xi_{k}}), \quad k = 2, \cdots, K.
+\end{align*}\]</span></p>
+<p>Since we have presented estimating equations in the weighted least squares form, at the <span class="math inline">\(K\)</span>th decision with responses <span class="math inline">\(Y_{i}\)</span>, it is known that it is possible to get asymptotically efficient estimator for <span class="math inline">\(\xi_{K}\)</span> when <span class="math inline">\(Var(Y|\overline{X_{k}}= \overline{x_{k}}, \overline{A_{k}} = \overline{a_{k}}) = \Sigma_{k}(\overline{x_{k}}, \overline{a_{k}})\)</span>. On the other hand, for <span class="math inline">\(k &lt; K\)</span> with responses <span class="math inline">\(\widetilde{V}_{(k+1),i}\)</span>, the theory may no longer apply. However, since deriving the optimal term is considerably complicated, it is standard to fit the model via OLS or WLS.</p>
+<div id="star-estimation-for-k-2" class="section level4">
+<h4><span class="math inline">\(\star\)</span> Estimation for <span class="math inline">\(K = 2\)</span> :</h4>
+<p>Now we illustrate this approach for <span class="math inline">\(K = 2\)</span>, where at each decision, there are two possible treatment options coded as 0 and 1. Let us first define history at time <span class="math inline">\(1\)</span> and <span class="math inline">\(2\)</span> as <span class="math inline">\(\mathcal{H}_{1}:= (1, x_{1}^{T})^{T}\)</span> and <span class="math inline">\(\mathcal{H}_{2}:= (1, x_{1}^{T}, a_{1}, x_{2}^{T})^{T}\)</span>, respectively. Here, we assume linear models for the Q-functions as follows.</p>
+<p><span class="math display">\[\begin{align*}
+&amp; Q_{1}(x_{1}, a_{1}; \boldsymbol{\xi}_{1}) \hspace{1cm} := \mathcal{H}_{1}^{T} \boldsymbol{\beta}_{1} + a_{1} (\mathcal{H}_{1}^{T} \boldsymbol{\gamma}_{1}) \\
+&amp; Q_{2}(x_{1}, a_{1}, x_{2}, a_{2}; \boldsymbol{\xi}_{2}) := \mathcal{H}_{2}^{T} \boldsymbol{\beta}_{2} + a_{2} (\mathcal{H}_{2}^{T} \boldsymbol{\gamma}_{2})
+\end{align*}\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol{\xi}_{k} = (\boldsymbol{\beta}_{k}, \boldsymbol{\gamma}_{k})^{T}\)</span> for <span class="math inline">\(k = 1, 2\)</span>.</p>
+<p>By definition,</p>
+<p><span class="math display">\[\begin{align*}
+V_{2} (x_{1}, a_{1}, x_{2}; \boldsymbol{\xi}_{2}) &amp;= \max_{a_{2}} Q_{2} (x_{1}, a_{1}, x_{2}, a_{2}; \boldsymbol{\xi}_{2}) \\
+&amp;= \max_{a_{2}} \left[ \mathcal{H}_{2}^{T} \boldsymbol{\beta}_{2} + a_{2} (\mathcal{H}_{2}^{T} \boldsymbol{\gamma}_{2}) \right] \\
+&amp;= \mathcal{H}_{2}^{T} \boldsymbol{\beta}_{2} + \mathcal{H}_{2}^{T} \boldsymbol{\gamma}_{2} \,\, \mathbf{1}\left(\mathcal{H}_{2}^{T} \boldsymbol{\gamma}_{2} &gt; 0 \right), \\
+V_{1} (x_{1}; \boldsymbol{\xi}_{1}) &amp;= \max_{a_{1}} Q_{1} (x_{1}, a_{1}; \boldsymbol{\xi}_{1}) \\
+&amp;= \max_{a_{1}} \left[ \mathcal{H}_{1}^{T} \boldsymbol{\beta}_{1} + a_{1} (\mathcal{H}_{1}^{T} \boldsymbol{\gamma}_{1}) \right] \\
+&amp;= \mathcal{H}_{1}^{T} \boldsymbol{\beta}_{1} + \mathcal{H}_{1}^{T} \boldsymbol{\gamma}_{1} \,\, \mathbf{1}\left(\mathcal{H}_{1}^{T} \boldsymbol{\gamma}_{1} &gt; 0 \right).
+\end{align*}\]</span></p>
+<p>which implies <span class="math inline">\(d_{1}^{opt}(x_{1}; \boldsymbol{\xi}_{1}) = \mathbf{1}\left(\mathcal{H}_{1}^{T} \boldsymbol{\gamma}_{1} &gt; 0 \right), \,\, d_{2}^{opt}(x_{1}, a_{1}, x_{2}; \boldsymbol{\xi}_{2}) = \mathbf{1}\left(\mathcal{H}_{2}^{T} \boldsymbol{\gamma}_{2} &gt; 0 \right)\)</span>.</p>
+<p>In this example, we follow the steps below based on ordinary least squares to estimate optimal dynamic treatment rule:</p>
+<ol style="list-style-type: decimal">
+<li><p>Estimate <span class="math inline">\(\boldsymbol{\xi}_{2}= ({\boldsymbol{\beta}}_{2}, {\boldsymbol{\gamma}}_{2}).\)</span>
+<span class="math display">\[\begin{align*}
+(\widehat{\boldsymbol{\beta}}_{2}, \widehat{\boldsymbol{\gamma}}_{2}) &amp;= \argmin_{\beta_{2}, \gamma_{2}} \frac{1}{n} \sum_{i=1}^{n} \left(Y_{i} - Q_{2}(X_{1}, A_{1}, X_{2}, A_{2}; \beta_{2}, \gamma_{2}) \right)^{2} \\
+&amp;= \argmin_{\beta_{2}, \gamma_{2}} \frac{1}{n} \sum_{i=1}^{n} \left(Y_{i} - \mathcal{H}_{2,i}^{T} \boldsymbol{\beta}_{2} - A_{2,i} \mathcal{H}_{i,2}^{T} \boldsymbol{\gamma}_{2} \right)^{2} \\
+\end{align*}\]</span></p></li>
+<li><p>Calculate <span class="math inline">\(\widetilde{V_{1,i}}\)</span> for <span class="math inline">\(i=1,\cdots,n.\)</span>
+<span class="math display">\[\begin{align*}
+\widetilde{V_{1,i}} &amp;= \max_{a_{2}} \left[Q_{2}(X_{1}, A_{1}, X_{2}, A_{2}; \widehat{\beta}_{2}, \widehat{\gamma}_{2}) \right]\\
+&amp;= \max_{a_{2}} \left[ \mathcal{H}_{2,i}^{T} \widehat{\boldsymbol{\beta}}_{1} - A_{2,i} \mathcal{H}_{i,2}^{T} \widehat{\boldsymbol{\gamma}}_{2} \right].
+\end{align*}\]</span></p></li>
+<li><p>Estimate <span class="math inline">\(\boldsymbol{\xi}_{1}= ({\boldsymbol{\beta}}_{1}, {\boldsymbol{\gamma}}_{2}).\)</span>
+<span class="math display">\[\begin{align*}
+(\widehat{\boldsymbol{\beta}}_{1}, \widehat{\boldsymbol{\gamma}}_{1}) &amp;= \argmin_{\beta_{1}, \gamma_{1}} \frac{1}{n} \sum_{i=1}^{n} \left( \widetilde{V_{1,i}} - Q_{1}(X_{1}, A_{1}; \beta_{1}, \gamma_{1}) \right)^{2} \\
+&amp;= \argmin_{\beta_{1}, \gamma_{1}} \frac{1}{n} \sum_{i=1}^{n} \left(\widetilde{V_{1,i}} - \mathcal{H}_{1,i}^{T} \boldsymbol{\beta}_{2} - A_{1,i} \mathcal{H}_{i,1}^{T} \boldsymbol{\gamma}_{1} \right)^{2} \\
+\end{align*}\]</span></p></li>
+<li><p>Estimate the optimal treatment <span class="math inline">\(\mathbf{d}^{opt}=(\mathbf{d}_{1}^{opt}, \mathbf{d}_{2}^{opt}).\)</span>
+<span class="math display">\[\begin{align*}
+&amp; \widehat{d}_{1}^{opt}(x_{1}; \widehat{\boldsymbol{\xi}}_{1}) \hspace{1cm} =
+\mathbf{1}\left(\mathcal{H}_{1}^{T} \widehat{\boldsymbol{\gamma}}_{1} &gt; 0 \right), \\
+&amp; \widehat{d}_{2}^{opt}(x_{1}, a_{1}, x_{2}; \widehat{\boldsymbol{\xi}}_{2}) = \mathbf{1}\left(\mathcal{H}_{2}^{T} \widehat{\boldsymbol{\gamma}}_{2} &gt; 0 \right).
+\end{align*}\]</span></p></li>
+</ol>
+<hr />
+</div>
+</div>
+<div id="simulation" class="section level3">
+<h3>Simulation Studies</h3>
+<p>For simiulation, generating data process mimics a study in which HIV-infected patients are randomized to receive antiretroviral therapy (coded as 1) or not (coded as 0) at baseline and at six months. The randomization probabilities depend on baseline and six month CD4 counts. The detailed generating process is as follows.</p>
+<blockquote>
+<ul>
+<li><span class="math inline">\(X_{1} \sim N(450, 150^2)\)</span> : baseline CD4 count</li>
+<li><span class="math inline">\(A_{1} | X_{1} = x_{1} \sim \text{Ber}\left[\text{expit}(-0.006 x_{1} + 2)\right]\)</span> : treatment <span class="math inline">\(A_{1}\)</span></li>
+<li><span class="math inline">\(X_{2} | X_{1} = x_{1}, A_{1} = a_{1} \sim N(1.25 x_{1}, 60^2)\)</span> : six month CD4 count</li>
+<li><span class="math inline">\(\small{A_{2} | X_{1} = x_{1}, A_{1} = a_{1}, X_{2} = x_{2} \sim \text{Ber}\left[\text{expit}(-0.004 x_{2} + 0.8)\right]}\)</span> : treatment <span class="math inline">\(A_{2}\)</span></li>
+<li><span class="math inline">\(Y = Y^{opt} - \mu_{1}(X_{1}, A_{1}) - \mu_{2}(X_{1}, A_{1}, X_{2}, A_{2})\)</span> : CD4 count at one year
+<ul>
+<li><span class="math inline">\(Y^{opt} | X_{1} = x_{1}, A_{1} = a_{1}, X_{2} = x_{2}, A_{2} = a_{2} \sim \hspace{1cm} N(1.6 x_{1} + 400, 60^2)\)</span></li>
+<li><span class="math display">\[\begin{align*}
+\mu_{1}(X_{1}, A_{1}) &amp;= (\gamma_{10} + \gamma_{11} X_{1}) \left[ \mathbf{1}(\gamma_{10} + \gamma_{11} X_{1} &gt; 0) - A_{1} \right] \\
+&amp;\overset{(set)}{=} (250 - X_{1}) \left[ \mathbf{1}(250 - X_{1} &gt; 0) - A_{1} \right]
+\end{align*}\]</span></li>
+<li><span class="math display">\[\begin{align*}
+\mu_{2}(X_{1}, A_{1}, X_{2}, A_{2}) &amp;= (\gamma_{20} + \gamma_{21} X_{2}) \left[ \mathbf{1}((\gamma_{20} + \gamma_{21} X_{2}) &gt; 0) - A_{2} \right] \\
+&amp;\overset{(set)}{=} (720 -2X_{2}) \left[\mathbf{1}(720 -2 X_{2} &gt; 0) - A_{2} \right]
+\end{align*}\]</span></li>
+</ul></li>
+</ul>
+</blockquote>
+<p>where <span class="math inline">\(\text{expit}(x) = e^{x}/(e^{x}+1)\)</span>, and <span class="math inline">\(\mu_{1}(X_{1}, A_{1}), \mu_{2}(X_{1}, A_{1}, X_{2}, A_{2})\)</span> are true advantage functions in response if the optimal treatment at each decision were given relative to that actually received. Then the true optimal treatment regime is <span class="math inline">\(d_{1}^{opt}(x_{1}) = \mathbf{1}(250 - X_{1} &gt; 0)\)</span> and <span class="math inline">\(d_{2}^{opt}(x_{1}, a_{1}, x_{2}) = \mathbf{1}(720 -2 X_{2} &gt; 0)\)</span>.</p>
+<p>For Q-learning, we assumed working models
+<span class="math display">\[\begin{align*}
+&amp; Q_{1}(x_{1}, a_{1}; \boldsymbol{\xi}_{1}) \hspace{1cm} := \beta_{10} + \beta_{11} x_{1} + a_{1} (250 - x_{1}) \\
+&amp; Q_{2}(x_{1}, a_{1}, x_{2}, a_{2}; \boldsymbol{\xi}_{2}) :=
+\beta_{20} + \beta_{21} x_{1} + \beta_{22} a_{1} +  \beta_{23} x_{1} a_{1} +  \beta_{24} x_{2} +  a_{2} (720 -2 x_{2})
+\end{align*}\]</span></p>
+<p>With <span class="math inline">\(n=1000\)</span>, we have the following results:</p>
+<p><span class="math display">\[\begin{align*}
+\begin{aligned}
+&amp;\begin{array}{ccc}
+\text { Time } &amp; \text{ True parameter } &amp; \text { Estimated parameter } &amp; \text{ Predicted ITR Accuracy }  \\
+\hline
+1 &amp; \gamma_{10} = 250 &amp; 155.49 (21.76) &amp; 0.957 (0.012) \\
+1 &amp; \gamma_{11} = -1.0 &amp; -0.78 (0.05) &amp; - \\
+2 &amp; \gamma_{20} = 720  &amp; 506.50 (48.78) &amp; 0.957 (0.014) \\
+2 &amp; \gamma_{21} = -2.0 &amp; -1.58 (0.09) &amp; - \\
+\hline
+\end{array}
+\end{aligned}
+\end{align*}\]</span></p>
+<details>
+<summary>
+Click for code
+</summary>
+<pre class="r"><code>expit &lt;- function(x){ exp(x)/(1+exp(x)) }
+
+simulated_dtr &lt;- function(iter = 3){
+  
+  n = 1000
+  result = list()
+  result[[1]] = array(0, dim = c(2, 2, iter))
+  result[[2]] = array(0, dim = c(2, 2, iter))
+  result_cutoff = data.frame(cutoff_X1 = 0, cutoff_X2 = 0,
+                             slope_X1 = 0, slope_X2 = 0)
+
+  for (i in 1:iter){
+    set.seed(i)
+    
+    # Generate dataset
+    X1 = rnorm(n, mean = 450, sd = 150) 
+    A1 = rbinom(n, size = 1, prob = expit(-0.006 * X1 + 2)) 
+    X2 = rnorm(n, mean = 1.25 * X1, sd = 60)
+    A2 = rbinom(n, size = 1, prob = expit(-0.004*X2 + 0.8)) 
+    Y_opt = rnorm(n, mean = 400 + 1.6 * X1, sd = 60) 
+    mu_1 = (250 - X1) * ( ifelse(250 - X1 &gt; 0, 1, 0) - A1 ) 
+    mu_2 = (720 - 2 * X2) * ( ifelse(720 - 2 * X2 &gt; 0, 1, 0) - A2 ) 
+    Y = Y_opt - mu_1 - mu_2
+    
+    # True optimal ITR
+    d1_opt = ifelse(250 - X1 &gt; 0, 1, 0) 
+    d2_opt = ifelse(720 - 2 * X2 &gt; 0, 1, 0) 
+    
+    # Estimate DTR
+    xi_2 = lm(Y ~ X1 + A1 + X1*A1 + X2 + A2 + A2*X2)
+    pred_A2 = as.numeric(ifelse(cbind(1, X2) %*% coef(xi_2)[c(5,7)]&gt;0, 1, 0))
+    v_1 = as.numeric(cbind(1, X1, A1, X2, X1*A1) %*% coef(xi_2)[c(1:4, 6)] 
+                     + pred_A2 * cbind(1, X2) %*% coef(xi_2)[c(5,7)])
+    xi_1 = lm(v_1 ~ X1 + A1 + A1*X1)
+    pred_A1 = as.numeric(ifelse(cbind(1, X1) %*% coef(xi_1)[3:4]&gt;0, 1, 0))
+
+    result_cutoff = rbind(result_cutoff, 
+                          c(coef(xi_1)[3], coef(xi_2)[5],
+                            coef(xi_1)[4], coef(xi_2)[7]))
+    result[[1]][,,i] = table(d1_opt, pred_A1)                    
+    result[[2]][,,i] = table(d2_opt, pred_A2)
+  }
+  result_cutoff = result_cutoff[-1,]
+  result[[3]] = result_cutoff
+  return(result)
+}
+
+sim_result = simulated_dtr(1000)
+accuracy &lt;- apply(sim_result[[1]], 3, function(x) {(x[1,1]+x[2,2])/1000})
+accuracy2 &lt;- apply(sim_result[[2]], 3, function(x) {(x[1,1]+x[2,2])/1000})
+mean(accuracy); sd(accuracy)
+mean(accuracy2); sd(accuracy2)
+apply(sim_result[[3]], 2, mean)
+apply(sim_result[[3]], 2, sd)</code></pre>
+</details>
+<p>Based on the estimated optimal regime, the first therapy is given to patients with baseline CD4 count less than 155.49, while the true optimal CD4 threshold is 250. Similarly, at the second decision, the second therapy is given to patients with six month CD4 count less than 506.50, while the true optimal CD4 threshold is 720.</p>
+<p>The reason why the estimated parameters do not achieve the true optimal CD4 threshold is that the Q-functions are misspecified. More specifically, the linear models of <span class="math inline">\(f(\beta_{k})=H_{k}^{T}\beta_{k}\)</span> for <span class="math inline">\(k=1, 2\)</span> are poor approximations to the complex forms of the true models. This is why people introduced ‘Advantage learning (A-learning)’ because the entire Q-functions may not be directly specified to estimate the optimal regime. We will discuss more this topic.</p>
 </div>
