@@ -21,8 +21,9 @@ links:
 <p><a href="#overview">1. Overview</a></p>
 <p><a href="#identification">2. Identification</a></p>
 <p><a href="#optimal_treatment_regime">3. Optimal Treatment Regimes</a></p>
-<p><a href="#estimation">4. Estimation of Optimal Treatment Regimes</a></p>
-<p><a href="#simulation">5. Simlation Studies</a></p>
+<p><a href="#estimation_dtr">4. Estimation of Optimal Treatment Regimes</a></p>
+<p><a href="#estimation">5. Estimation of Potential Outcome</a></p>
+<p><a href="#simulation">6. Simlation Studies</a></p>
 <hr />
 </div>
 <div id="overview" class="section level3">
@@ -196,7 +197,7 @@ where (a) uses iterated expectation, (b) uses sequential ignorability, (c) uses 
 </div>
 <div id="optimal_treatment_regime" class="section level3">
 <h3>Optimal Treatment Regimes</h3>
-<p>Q- and A-learning are two approaches to estimate <span class="math inline">\(d^{opt}\)</span> satisfying <span class="math inline">\(\mathbb{E}[Y^{*}\big(\mathbf{d}\big)] \le \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)], \text{ for all } \mathbf{d} \in \mathcal{D}\)</span> which involve recursive algorithms.</p>
+<p>Q- and A-learning are two approaches to estimate <span class="math inline">\(d^{opt}\)</span> satisfying <span class="math inline">\(\mathbb{E}[Y^{*}\big(\mathbf{d}\big)] \le \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)], \text{ for all } \mathbf{d} \in \mathcal{D}\)</span> which involve recursive algorithms. In this posting, we will focus on Q-learning method.</p>
 <p>In this section, we demonstrate the formulation of <span class="math inline">\(d^{opt}\)</span> in terms of the potential outcomes and then show how <span class="math inline">\(d^{opt}\)</span> may be expressed in terms of the observed data under assumptions described in the section <a href="#Model_Setup_and_Assumptions">Model setup and Assumptions</a>.</p>
 <blockquote>
 <p>At the <span class="math inline">\(K\)</span>th decision point, for any <span class="math inline">\((\overline{x_{K}}, \overline{a_{K-1}}) \in \Gamma_{K}\)</span>, define
@@ -216,7 +217,7 @@ V_{k}^{}(\overline{x_{k}}, \overline{a_{k-1}}) &amp;= \max_{a_{k} \in \Psi_{k}(\
 <p>Similarly, <span class="math inline">\(d^{opt}_{k}\)</span> is the <span class="math inline">\(k\)</span>th treatment that maximizes the <span class="math inline">\(k+1\)</span>th expected outcome that would be achieved if subsequent optimal rules already defined were followed henceforth. It shows how <span class="math inline">\(\mathbf{d}^{opt}=(d^{opt}_{1}, d^{opt}_{2}, \cdots, d^{opt}_{K})\)</span> is determined via backward induction, also known as dynamic programming. Proof will be added to show that <span class="math inline">\(\mathbf{d}^{opt}\)</span> defined in the above steps satisfies the condition <span class="math inline">\(\mathbb{E}[Y^{*}\big(\mathbf{d}\big)] \le \mathbb{E}[Y^{*}\big(\mathbf{d}^{opt}\big)], \text{ for all } \mathbf{d} \in \mathcal{D}\)</span>.</p>
 <hr />
 </div>
-<div id="estimation" class="section level3">
+<div id="estimation_dtr" class="section level3">
 <h3>Estimation of Optimal Treatment Regimes</h3>
 <p>If an optimal regime is to be identifiable, we can express <span class="math inline">\(\mathbf{d}^{opt}\)</span> in terms of the distribution of the observed i.i.d. data <span class="math inline">\((X_{1i}, A_{1i}, \cdots, X_{Ki}, A_{Ki}, Y_{i}), i = 1, \cdots, n\)</span>.</p>
 <blockquote>
@@ -311,6 +312,47 @@ V_{1} (x_{1}; \boldsymbol{\xi}_{1}) &amp;= \max_{a_{1}} Q_{1} (x_{1}, a_{1}; \bo
 <hr />
 </div>
 </div>
+<div id="estimation" class="section level3">
+<h3>Estimation of Potential Outcome</h3>
+<p>In this section, consider a fixed treatment <span class="math inline">\((a_{1}, a_{2}) \in \{0,1\}^{2}\)</span> with two time points <span class="math inline">\(K = 2\)</span>. We are interested in estimating the expected potential outcome <span class="math inline">\(\mathbb{E}[Y(a_{1}, a_{2})]\)</span> of treatment <span class="math inline">\((a_{1}, a_{2})\)</span> using weighted observed outcome <span class="math inline">\(W \mathbb{1}(A_{1} = a_{1}, A_{2} = a_{2})Y\)</span> when the random treatment used <span class="math inline">\((A_{1}, A_{2})\)</span> in fact agrees with the desired treatment <span class="math inline">\((a_{1}, a_{2})\)</span>. We have the following lemma below based on inverse probability weighting.</p>
+<p><br />
+</p>
+<div class="lemma">
+<p><span id="lem:unlabeled-div-5" class="lemma"><strong>Lemma 3  </strong></span><em>Fix a treatment <span class="math inline">\((a_{1},a_{2})\in \{0,1\}^{2}\)</span>. Under the assumptions of consistency, SUTVA, and sequential ignorability mentioned in the section <a href="#Model_Setup_and_Assumptions">Model setup and assumptions</a>, we have</em>
+<span class="math display">\[\begin{align*}
+&amp;\mathbb{E}[Y^{*}(a_{1}, a_{2})] \\
+&amp;= \mathbb{E}_{(X_{1}, A_{1}, X_{2}, A_{2}, Y)} \left[ \frac{Y \mathbf{1}(A_{1} = a_{1})}{\mathbf{P}(A_{1} = a_{1}|X_{1})}\frac{\mathbf{1}(A_{2} = a_{2})}{\mathbf{P}(A_{2} = a_{2} | X_{1}, A_{1} = a_{1}, X_{2})}\right] \\
+&amp;= \mathbb{E} \left[ W \mathbf{1}(A_1 = a_1, A_2 = a_2) Y\right]
+\end{align*}\]</span>
+where <span class="math inline">\(W = \mathbf{P}(A_{1} = a_{1}|X_{1})^{-1}, \mathbf{P}(A_{2} = a_{2} | X_{2}, A_{1} = a_{1}, X_{1})^{-1}\)</span>.</p>
+</div>
+<div class="proof">
+<p><span id="unlabeled-div-6" class="proof"><em>Proof</em>. </span><span class="math inline">\({}\)</span>
+Using iterated expectations, consistency, and sequential ignorability, we have
+<span class="math display">\[\begin{align*}
+&amp; \mathbb{E}_{(X_{1}, A_{1}, X_{2}, A_{2}, Y)} \left[ \frac{Y \mathbf{1}(A_{1} = a_{1})}{\mathbb{P}(A_{1} = a_{1}|X_{1})}\frac{\mathbf{1}(A_{2} = a_{2})}{\mathbb{P}(A_{2} = a_{2} | X_{1}, A_{1} = a_{1}, X_{2})}\right] \\
+&amp; \qquad \overset{(a)}{=} \mathbb{E}_{(X_{1}, A_{1}, X_{2}, A_{2}, Y^{*})} \left[ \frac{Y^{*}(a_{1}, a_{2})}{\mathbb{P}(A_{1} = a_{1}|X_{1})}\frac{\mathbf{1}(A_{1} = a_{1}) \mathbf{1}(A_{2} = a_{2})}{\mathbb{P}(A_{2} = a_{2} | X_{1}, A_{1} = a_{1}, X_{2})}\right] \\
+    &amp; \qquad = \mathbb{E}_{(X_{1}, A_{1}, X_{2})} \left[ \mathbb{E}_{(A_{2}, Y^{*})} \left[ \frac{Y^{*}(a_{1}, a_{2})}{\mathbb{P}(A_{1} = a_{1}|X_{1})}\frac{\mathbf{1}(A_{1} = a_{1}) \mathbf{1}(A_{2} = a_{2})}{\mathbb{P}(A_{2} = a_{2} | X_{1}, A_{1} = a_{1}, X_{2})} \bigg| X_{1}, A_{1}, X_{2} \right] \right] \\
+    &amp; \qquad = \mathbb{E}_{(X_{1}, A_{1}, X_{2})} \left[ \frac{\mathbf{1}(A_{1} = a_{1})}{\mathbb{P}(A_{1} = a_{1}|X_{1}) \mathbb{P}(A_{2} = a_{2} | X_{1}, A_{1} = a_{1}, X_{2})} \,\, \mathbb{E}_{(A_{2}, Y^{*})} \left[ Y^{*}(a_{1}, a_{2})\mathbf{1}(A_{2} = a_{2}) \bigg| X_{1}, A_{1}, X_{2} \right] \right] \\
+    &amp; \qquad \overset{(b)}{=} \mathbb{E}_{(X_{1}, A_{1}, X_{2})} \left[ \frac{\mathbf{1}(A_{1} = a_{1})}{\mathbb{P}(A_{1} = a_{1}|X_{1}) \mathbb{P}(A_{2} = a_{2} | X_{1}, A_{1} = a_{1}, X_{2})} \,\, \mathbb{E}_{Y^{*}} \left[ Y^{*}(a_{1}, a_{2}) \bigg| X_{1}, A_{1}, X_{2} \right] \mathbb{E}_{A_{2}} \left[\mathbf{1}(A_{2} = a_{2}) \bigg| X_{1}, A_{1} = a_{1}, X_{2} \right] \right] \\
+    &amp; \qquad = \mathbb{E}_{(X_{1}, A_{1}, X_{2})} \left[ \frac{\mathbf{1}(A_{1} = a_{1})}{\mathbb{P}(A_{1} = a_{1}|X_{1}) \mathbb{P}(A_{2} = a_{2} | X_{1}, A_{1} = a_{1}, X_{2})} \,\, \mathbb{E}_{Y^{*}} \left[ Y^{*}(a_{1}, a_{2}) \bigg| X_{1}, A_{1}, X_{2} \right] \mathbb{P} \left(A_{2} = a_{2} \bigg| X_{1}, A_{1} = a_{1}, X_{2} \right) \right] \\
+    &amp; \qquad = \mathbb{E}_{(X_{1}, A_{1}, X_{2})} \left[ \frac{\mathbf{1}(A_{1} = a_{1})}{\mathbb{P}(A_{1} = a_{1}|X_{1})} \,\, \mathbb{E}_{Y^{*}} \left[ Y^{*}(a_{1}, a_{2}) \bigg| X_{1}, A_{1}, X_{2} \right] \right] \\
+    &amp; \qquad = \mathbb{E}_{(X_{1}, A_{1}, X_{2}, Y^{*})} \left[ \frac{Y^{*}(a_{1}, a_{2}) \mathbf{1}(A_{1} = a_{1})}{\mathbb{P}(A_{1} = a_{1}|X_{1})} \right] \\
+    &amp; \qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{(A_{1}, X_{2}, Y^{*})} \left[ \frac{Y^{*}(a_{1}, a_{2})\mathbf{1}(A_{1} = a_{1})}{\mathbb{P}(A_{1} = a_{1}|X_{1})} \bigg| X_{1} \right] \right] \\
+    &amp; \qquad = \mathbb{E}_{X_{1}} \left[ \frac{1}{\mathbb{P}(A_{1} = a_{1}|X_{1})} \,\, \mathbb{E}_{(A_{1}, X_{2}, Y^{*})}  \left[ Y^{*}(a_{1}, a_{2})\mathbf{1}(A_{1} = a_{1}) \bigg| X_{1} \right] \right] \\
+    &amp; \qquad \overset{(c)}{=} \mathbb{E}_{X_{1}} \left[ \frac{1}{P(A_{1} = a_{1}|X_{1})} \,\, \mathbb{E}_{(X_{2}, Y^{*})}  \left[ Y^{*}(a_{1}, a_{2}) \bigg| X_{1} \right] \mathbb{E}_{A_{1}}  \left[\mathbf{1}(A_{1} = a_{1}) \bigg| X_{1} \right] \right] \\
+    &amp; \qquad = \mathbb{E}_{X_{1}} \left[ \frac{1}{\mathbb{P}(A_{1} = a_{1}|X_{1})} \,\, \mathbb{E}_{(X_{2}, Y^{*})}  \left[ Y^{*}(a_{1}, a_{2}) \bigg| X_{1} \right] \mathbb{P} \left(A_{1} = a_{1} \bigg| X_{1} \right) \right] \\
+    &amp; \qquad = \mathbb{E}_{X_{1}} \left[ \mathbb{E}_{(X_{2}, Y^{*})}  \left[ Y^{*}(a_{1}, a_{2}) \bigg| X_{1} \right] \right] \\
+    &amp; \qquad = \mathbb{E}_{(X_{1}, X_{2}, Y^{*})} \bigg[Y^{*}(a_{1}, a_{2})  \bigg] \\
+    &amp; \qquad = \mathbb{E} [Y^{*}(a_{1}, a_{2})]
+\end{align*}\]</span>
+where <span class="math inline">\((b)\)</span> and <span class="math inline">\((c)\)</span> use the sequential ignorability assumptions <span class="math inline">\(Y^{*}(a_{1}, a_{2}) \perp A_{2} \, | \, (X_{1}, A_{1}, X_{2})\)</span>, <span class="math inline">\(Y^{*}(a_{1}, a_{2}) \perp A_{1} | X_{1}\)</span>, respectively, and <span class="math inline">\((a)\)</span> uses the fact <span class="math inline">\(Y \mathbf{1}(A_{1} = a_{1}) \mathbf{1}(A_{2} = a_{2}) = Y(A_{1}, A_{2}) \mathbf{1}(A_{1} = a_{1}) \mathbf{1}(A_{2} = a_{2}) = Y^{*}(a_{1}, a_{2}) \mathbf{1}(A_{1} = a_{1}) \mathbf{1}(A_{2} = a_{2})\)</span> using consistency.
+<span class="math display">\[\begin{align*}
+\hspace{15cm} \square
+\end{align*}\]</span></p>
+</div>
+<hr />
+</div>
 <div id="simulation" class="section level3">
 <h3>Simulation Studies</h3>
 <p>For simiulation, generating data process mimics a study in which HIV-infected patients are randomized to receive antiretroviral therapy (coded as 1) or not (coded as 0) at baseline and at six months. The randomization probabilities depend on baseline and six month CD4 counts. The detailed generating process is as follows.</p>
@@ -345,12 +387,12 @@ V_{1} (x_{1}; \boldsymbol{\xi}_{1}) &amp;= \max_{a_{1}} Q_{1} (x_{1}, a_{1}; \bo
 <p><span class="math display">\[\begin{align*}
 \begin{aligned}
 &amp;\begin{array}{ccc}
-\text { Time } &amp; \text{ True parameter } &amp; \text { Estimated parameter } &amp; \text{ Predicted ITR Accuracy }  \\
+\text { Time } &amp; \text{ True parameter } &amp; \text { Estimated parameter }  &amp; \text{ Predicted ITR Accuracy }  \\
 \hline
 1 &amp; \gamma_{10} = 250 &amp; 155.49 (21.76) &amp; 0.957 (0.012) \\
-1 &amp; \gamma_{11} = -1.0 &amp; -0.78 (0.05) &amp; - \\
-2 &amp; \gamma_{20} = 720  &amp; 506.50 (48.78) &amp; 0.957 (0.014) \\
-2 &amp; \gamma_{21} = -2.0 &amp; -1.58 (0.09) &amp; - \\
+1 &amp; \gamma_{11} = -1.0 &amp; -0.78 (0.05)  &amp;- \\
+2 &amp; \gamma_{20} = 720  &amp; 506.50 (48.78) &amp;0.957 (0.014) \\
+2 &amp; \gamma_{21} = -2.0 &amp; -1.58 (0.09) &amp;- \\
 \hline
 \end{array}
 \end{aligned}
@@ -369,6 +411,7 @@ simulated_dtr &lt;- function(iter = 3){
   result[[2]] = array(0, dim = c(2, 2, iter))
   result_cutoff = data.frame(cutoff_X1 = 0, cutoff_X2 = 0,
                              slope_X1 = 0, slope_X2 = 0)
+  result_outcome = data.frame(mean_Y_est_itr = 0, mean_Y_itr = 0)
 
   for (i in 1:iter){
     set.seed(i)
@@ -394,15 +437,48 @@ simulated_dtr &lt;- function(iter = 3){
                      + pred_A2 * cbind(1, X2) %*% coef(xi_2)[c(5,7)])
     xi_1 = lm(v_1 ~ X1 + A1 + A1*X1)
     pred_A1 = as.numeric(ifelse(cbind(1, X1) %*% coef(xi_1)[3:4]&gt;0, 1, 0))
+    
+    # Estimate potential outcome
+    
+    ## propensity score model
+    ps1_model = glm(A1 ~ X1, family = binomial(link = &quot;logit&quot;))
+    ps1 = predict(ps1_model, type = &quot;response&quot;)
+    ps2_model = glm(A2 ~ X1 + A1 + X2, family = binomial(link = &quot;logit&quot;))
+    ps2 = predict(ps2_model, type = &quot;response&quot;)
 
+    ## IPW
+    weight = rep(0, n)
+    weight[A1 == 1 &amp; A2 == 1] = 
+      ps1[A1 == 1 &amp; A2 == 1] * ps2[A1 == 1 &amp; A2 == 1]
+    weight[A1 == 1 &amp; A2 == 0] = 
+      ps1[A1 == 1 &amp; A2 == 0] * (1-ps2[A1 == 1 &amp; A2 == 0])
+    weight[A1 == 0 &amp; A2 == 1] = (1-ps1[A1 == 0 &amp; A2 == 1]) * 
+      ps2[A1 == 0 &amp; A2 == 1]
+    weight[A1 == 0 &amp; A2 == 0] = (1-ps1[A1 == 0 &amp; A2 == 0]) * 
+      (1-ps2[A1 == 0 &amp; A2 == 0])
+    weight = 1/weight
+
+    msm = lm(Y ~ A1 + A2, weights = weight)
+
+    ## Potential outcome
+    mean_outcome_est_itr = 
+      mean(predict(msm, data.frame(A1 = pred_A1, A2 = pred_A2)))
+    mean_outcome_itr = 
+      mean(predict(msm, data.frame(A1 = d1_opt, A2 = d2_opt)))
+    
+    # Result
     result_cutoff = rbind(result_cutoff, 
                           c(coef(xi_1)[3], coef(xi_2)[5],
                             coef(xi_1)[4], coef(xi_2)[7]))
+    result_outcome = rbind(result_outcome, 
+                          c(mean_outcome_est_itr, mean_outcome_itr))
     result[[1]][,,i] = table(d1_opt, pred_A1)                    
     result[[2]][,,i] = table(d2_opt, pred_A2)
   }
-  result_cutoff = result_cutoff[-1,]
+  result_cutoff = result_cutoff[-1,];
+  result_outcome = result_outcome[-1,]
   result[[3]] = result_cutoff
+  result[[4]] = result_outcome
   return(result)
 }
 
@@ -412,8 +488,11 @@ accuracy2 &lt;- apply(sim_result[[2]], 3, function(x) {(x[1,1]+x[2,2])/1000})
 mean(accuracy); sd(accuracy)
 mean(accuracy2); sd(accuracy2)
 apply(sim_result[[3]], 2, mean)
-apply(sim_result[[3]], 2, sd)</code></pre>
+apply(sim_result[[3]], 2, sd)
+apply(sim_result[[4]], 2, mean)
+apply(sim_result[[4]], 2, sd)</code></pre>
 </details>
 <p>Based on the estimated optimal regime, the first therapy is given to patients with baseline CD4 count less than 155.49, while the true optimal CD4 threshold is 250. Similarly, at the second decision, the second therapy is given to patients with six month CD4 count less than 506.50, while the true optimal CD4 threshold is 720.</p>
+<p>Although Q-learning yields poor estimation of parameters, the estimated optimal regime shows 95% accuracy. Also, the estimated potential outcome with optimal ITR under marginal structural model is <span class="math inline">\(\widehat{\mathbb{E}}(\mathbb{d}^{opt}) = 1002.53\)</span> (standard deviation of 22.83) and one with predicted ITR is <span class="math inline">\(\widehat{\mathbb{E}}(\widehat{\mathbb{d}}^{opt}) = 1028.47\)</span> (standard deviation of 26.97), which is smaller difference compared to the difference of parameters.</p>
 <p>The reason why the estimated parameters do not achieve the true optimal CD4 threshold is that the Q-functions are misspecified. More specifically, the linear models of <span class="math inline">\(f(\beta_{k})=H_{k}^{T}\beta_{k}\)</span> for <span class="math inline">\(k=1, 2\)</span> are poor approximations to the complex forms of the true models. This is why people introduced ‘Advantage learning (A-learning)’ because the entire Q-functions may not be directly specified to estimate the optimal regime. We will discuss more this topic.</p>
 </div>
