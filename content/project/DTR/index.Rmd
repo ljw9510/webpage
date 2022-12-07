@@ -33,12 +33,13 @@ knitr::opts_chunk$set(collapse = TRUE)
 
 [6. Simlation Studies](#simulation)
 
+[7. Sensitivity Analysis](#sensitivity)
 
-
+ 
 ---
 
 
-### Overview
+### Overview {#overview}
 
   In this project, we will review a paper *Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes* written by Phillip J. Schulte et al., (2014) [[paper]](https://pubmed.ncbi.nlm.nih.gov/25620840/), focusing on Q-learning methods.
 
@@ -107,12 +108,12 @@ The problem is that potential outcomes for an individual patient for all $\mathb
 Consider a study with a random sample of $n$ patients in $\Omega$. Assume independent and identically distributed time-ordered random variables $(X_{1i}, A_{1i}, \cdots, X_{Ki}, A_{Ki}, Y_{i}), i = 1, \cdots, n$ on $\Omega$. Use causal framework to estimate an optimal regime from the observed data under the following assumptions:
 
 * Consistency assumption : $X_{k} = X^{*}_{k}\big(\overline{A_{k-1}}\big), k=2, \cdots, K$ and $Y=Y^{*}\big(\overline{A_{k}}\big)$,
-* Stable unit treatment value assumption (well-defineness) : a patient's covariates and outcome are not affected by treatment assignment and other patients,
+* Stable unit treatment value assumption (well-defined) : a patient's covariates and outcome are not affected by treatment assignment and other patients,
 * Sequential Ignorability : $A_{k} \perp W^{*} | \{\overline{X_{k}}, \overline{A_{k-1}} \}, k=1, \cdots, K$.
 
 ---
 
-### Identification
+### Identification {#identification}
 
 In this section, we are interested in identifying the expected potential outcome $\mathbb{E}[Y^{*}(\overline{a_{K}})]$ which may or may not be observable based on statistical quantity.
 
@@ -563,3 +564,247 @@ Although Q-learning yields poor estimation of parameters, the estimated optimal 
 
 The reason why the estimated parameters do not achieve the true optimal CD4 threshold is that the Q-functions are misspecified. More specifically, the linear models of $f(\beta_{k})=H_{k}^{T}\beta_{k}$ for $k=1, 2$ are poor approximations to the complex forms of the true models. This is why people introduced 'Advantage learning (A-learning)' because the entire Q-functions may not be directly specified to estimate the optimal regime. We will discuss more this topic.
  
+ 
+---
+ 
+### Sensitivity Analysis {#sensitivity}
+
+In the previous section, the estimation approach for optimal treatment rule $\mathbb{d}^{opt}$ is based on the following assumptions:
+
+* Consistency assumption : $X_{k} = X^{*}_{k}\big(\overline{A_{k-1}}\big), k=2, \cdots, K$ and $Y=Y^{*}\big(\overline{A_{k}}\big)$,
+* Stable unit treatment value assumption (well-defined) : a patient's covariates and outcome are not affected by treatment assignment and other patients,
+* Sequential Ignorability : $A_{k} \perp W^{*} | \{\overline{X_{k}}, \overline{A_{k-1}} \}, k=1, \cdots, K$.
+
+Based on these assumptions, we were able to identify and estimate the causal effect, which eventually allows us to find the optimal treatment rule. 
+
+In this section, we consider the situation where the sequential ignorability assumption is violated due to the existence of unmeasured confounder $U_{k}$ for $k = 1, \cdots, K$. Then the potential outcome $\mathbb{E}[Y^{*}(\overline{a_{k}})]$ cannot be identified by the statistical estimand. The alternative approach is to find the possible range of values of the causal estimand in the presence of $U_{k}$ based on **Manski bound**. 
+
+Before we start, let us first define average treatment effect (ATE). Different from a single stage problem, there is no single definition of average treatment effect for time-varying covariates because there are $2^{K}$ possible combinations of treatment strategies. For static treatment, the number of possible contrasts is ${2^{K} \choose 2}$. For example, there are $6$ contrasts for $K = 2$ such as $\mathbb{E}[Y(1, 1) - Y(0, 0)]$ and $\mathbb{E}[Y(1, 1) - Y(1, 0)]$. Under the dynamic treatment rule, the definition of ATE is even more complicated since treatment assignment at time $k$ depends on the evolving individual characteristics . For the following derivation, we will use a **regret function** introduced by Murphy (2003). Regret function $R_{k}$ at each time point $k = 1, \cdots, K$ is defined as the expected difference in the outcome had the optimal treatment $d^{opt}_{k}$ been taken at $k$ instead of treatment $a_{k}$ among those who received treatment $\overline{a_{k}}$ up to time $k$ and the optimal regime from $k+1$ onward. Then under $K = 2$, the regret functions $R_{1}$ and $R_{2}$ are defined as:
+
+>
+>\begin{align*}
+>R_{1}(x_{1}, a_{1}) := &  \mathbb{E}\left[ Y^{*}(d^{opt}_{1}(x_{1}), d_{2}^{opt}(x_{1}, d^{opt}_{1}(x_{1}), X^{*}_{2}(d^{opt}_{1}))) - Y^{*}(a_{1}, d_{2}^{opt}(x_{1}, a_{1}, X^{*}_{2}(a_{1}))) \, \bigg| \, X_{1} = x_{1} \right], \\
+>R_{2}(\overline{x_{2}}, a_{1}, a_{2}) := & \mathbb{E}\left[Y^{*}(a_{1}, d_{2}^{opt}(x_{1}, a_{1}, x_{2})) - Y^{*}(a_{1}, a_{2}) \, \bigg| \, X_{1} = x_{1}, A_{1} = a_{1}, X_{2} = x_{2} \right] \\
+>\end{align*}
+>
+
+where $d^{opt}_{1} := d^{opt}_{1}(x_{1})$ and $d_{2}^{opt} = d_{2}^{opt}(x_{1}, a_{1}, X^{*}_{2}(a_{1}))$. If the regret $R_{k}$ is greater than $0$, we *regret* the choice of treatment. On the other hand, if $R_{k}=0$ (no regret), we can say that we make an ideal choice, therefore, $d^{opt}_{k}$ satisfies $R_{k}(\overline{X_{k}}, \overline{a_{k-1}}, d^{opt}_{k})=0$ for $k = 1, 2$.
+
+Here, we consider a fixed treatment $(a_{1}, a_{2}) \in \{0, 1\}^{2}$ under two time points $K = 2$ and bounded outcome $Y \in [Y_{l}, Y_{u}]$. The goal is to find the possible range of values of $R_{k}$ in the presence of unmeasured confounder $U_{k}$. Then we have the following modified assumptions:
+
+>
+>\begin{align*}
+>& 1. \quad Y^{*}(a_{1}, a_{2}) \perp A_{1} \,\, | \,\, \{X_{1}, U_{1}\},  \quad Y^{*}(a_{1}, a_{2}) \perp A_{2}  \,\, | \,\,  \{X_{1}, U_{1}, A_{1}, X_{2}, U_{2} \}, \\
+>& 2. \quad 0 < \mathbb{P}(A_{1} = a_{1} | X_{1} = x_{1}, U_{1} = u_{1}) <1, \\
+>& \hspace{0.7cm} 0 < \mathbb{P}(A_{2} = a_{2} | X_{1} = x_{1}, U_{1} = u_{1}, A_{1} = a_{1}, X_{2} = x_{2}, U_{2} = u_{2}) <1. \\
+>\end{align*}
+>
+
+
+#### Regret at second stage
+
+\begin{align*}
+& R_{2}(\overline{X_{2}}, a_{1}, a_{2}) \\
+& \quad = \mathbb{E} \bigg[ Y^{*}(a_{1}, \underbrace{d_{2}^{opt} (X_{1}, a_{1}, X_{2})}_{ =: \, d_{2}^{opt}}) 
+ - Y^{*}(a_{1}, a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \bigg] \\
+& \quad \overset{(a)}{=} \mathbb{1}(d_{2}^{opt} \neq a_{2}) \,\,
+\mathbb{E} \left[ Y^{*}(a_{1}, 1-a_{2}) 
+- Y^{*}(a_{1}, a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right]  \\
+& \quad =  \mathbb{1}(d_{2}^{opt} \neq a_{2}) \,\, 
+\left\{ \mathbb{E} \left[ Y^{*}(a_{1}, 1-a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right] 
+- \mathbb{E} \left[ Y^{*}(a_{1}, a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right] 
+\right\} \\
+& \quad =  \mathbb{1}(d_{2}^{opt} \neq a_{2}) \,\, 
+\bigg\{ \mathbb{E} \left[ Y^{*}(a_{1}, 1-a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2} \right] \mathbb{P} \left(A_{2} = a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2} \right) \\
+& \hspace{3.2cm} + \mathbb{E} \left[ Y^{*}(a_{1}, 1-a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1-a_{2} \right] \mathbb{P} \left(A_{2} = 1-a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2}\right) \\
+& \hspace{3.2cm} - \mathbb{E} \left[ Y^{*}(a_{1}, a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2} \right] \mathbb{P} \left(A_{2} = a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2}\right) \\
+& \hspace{3.2cm} - \mathbb{E} \left[ Y^{*}(a_{1}, a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1 - a_{2} \right] \mathbb{P} \left(A_{2} = 1-a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2} \right) \bigg\} \\
+& \quad \overset{(b)}{=} \mathbb{1}(d_{2}^{opt} \neq a_{2}) \,\, 
+\bigg\{ \mathbb{E} \left[ Y^{*}(a_{1}, 1-a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2} \right] \mathbb{P} \left(A_{2} = a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2} \right) \\
+& \hspace{3.2cm} + \mathbb{E} \left[ Y \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1-a_{2} \right] \mathbb{P} \left(A_{2} = 1-a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2}\right) \\
+& \hspace{3.2cm} - \mathbb{E} \left[ Y \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2} \right] \mathbb{P} \left(A_{2} = a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2}\right) \\
+& \hspace{3.2cm} - \mathbb{E} \left[ Y^{*}(a_{1}, a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1 - a_{2} \right] \mathbb{P} \left(A_{2} = 1-a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2} \right) \bigg\} \\
+& \quad = \mathbb{1}(d_{2}^{opt} \neq a_{2}) \,\, 
+\bigg\{ C + \mathbb{E} \left[ Y^{*}(a_{1}, 1-a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2} \right] \mathbb{P} \left(A_{2} = a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2} \right) \\
+& \hspace{3.2cm} - \mathbb{E} \left[ Y^{*}(a_{1}, a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1 - a_{2} \right] \mathbb{P} \left(A_{2} = 1-a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2} \right) \bigg\}. \\
+& \hspace{1cm}  \text{ where } \,\, C := \, \mathbb{E} \left[ Y \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1-a_{2} \right] \mathbb{P} \left(A_{2} = 1-a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2}\right) \\
+& \hspace{2.8cm} - \mathbb{E} \left[ Y \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2} \right] \mathbb{P} \left(A_{2} = a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2}\right). \\
+\end{align*}
+
+Here, $(a)$ uses the fact that $R_{2}=0$  if  $d_{2}^{opt}=a_{2}$, and $R_{2}>0$ if  $d_{2}^{opt} \neq a_{2}$, and $(b)$ uses consistency assumption. Let $p_{2} := \mathbb{P} \left(A_{2} = a_{2} \, | \, X_{1}, A_{1} = a_{1}, X_{2} \right)$. Since $R_{2}$ takes its maximum value when $\mathbb{E} \left[ Y^{*}(a_{1}, 1-a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = a_{2} \right] = Y_{U}$ and its minimum value when $\mathbb{E} \left[ Y^{*}(a_{1}, a_{2}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1 - a_{2} \right] = Y_{L}$,
+
+\begin{align*}
+& R_{2} \, \in \, \left[ \max(0 \,, \, C + \, p_{2} \times Y_{L} - (1- p_{2}) \times Y_{U}) \, , \,
+C + \, p_{2} \times Y_{U} - (1- p_{2}) \times Y_{L} \right] \\
+\Rightarrow \quad & R_{2} \, \in \, \left[ \max(0 \,, \, C - Y_{U} + (Y_{L} + Y_{U}) \times p_{2})  \, , \, C - Y_{L} + (Y_{L} + Y_{U}) \times p_{2} \right]. \\
+\end{align*}
+
+Therefore, $\left[ \max(0 \,, \, C - Y_{U} + (Y_{L} + Y_{U}) \times p_{2})  \, , \, C - Y_{L} + (Y_{L} + Y_{U}) \times p_{2} \right]$ is the possible range of values in the regret at time $2$ in the presence of unmeasured confounder. 
+
+
+#### Regret at first stage
+
+\begin{align*}
+& R_{1}(X_{1}, a_{1}) \\
+& \quad = \mathbb{E} \bigg[ Y^{*}( \underbrace{d^{opt}_{1}(X_{1})}_{=:d^{opt}_{1}}, d_{2}^{opt}(X_{1}, d^{opt}_{1}, X^{*}_{2}(d^{opt}_{1}))) - Y^{*}(a_{1}, d_{2}^{opt}(X_{1}, a_{1}, X^{*}_{2}(a_{1}))) \, \bigg| \, X_{1} \bigg] \\
+& \quad  \overset{(a)}{=} \mathbb{1}(d_{1}^{opt} \neq a_{1}) \,\, \mathbb{E} \left[ Y^{*}( 1-a_{1}, \underbrace{d_{2}^{opt}(X_{1}, 1-a_{1}, X^{*}_{2}(1-a_{1}))}_{=: d^{opt}_{2}(1-a_{1})}) - Y^{*}(a_{1}, \underbrace{d_{2}^{opt}(X_{1}, a_{1}, X^{*}_{2}(a_{1}))}_{=: d^{opt}_{2}(a_{1})}) \, \bigg| \, X_{1} \right] \\
+& \quad  = \mathbb{1}(d_{1}^{opt} \neq a_{1}) \,\, \left\{ \mathbb{E} \bigg[ Y^{*}( 1-a_{1}, d^{opt}_{2}(1-a_{1}))  \, \bigg| \, X_{1}  \bigg] - \mathbb{E} \bigg[ Y^{*}(a_{1}, d^{opt}_{2}(a_{1})) \, \bigg| \, X_{1} \bigg] \right\} \\
+& \quad =  \mathbb{1}(d_{1}^{opt} \neq a_{1}) \,\, 
+\bigg\{ \mathbb{E} \left[ Y^{*}(1-a_{1}, d^{opt}_{2}(1-a_{1})) \, \bigg| \, X_{1}, A_{1} = a_{1} \right] \mathbb{P} \left(A_{1} = a_{1} \, | \, X_{1} \right) \\
+& \hspace{3.2cm} + \mathbb{E} \left[ Y^{*}(1-a_{1}, d^{opt}_{2}(1-a_{1})) \, \bigg| \, X_{1}, A_{1} = 1-a_{1} \right] \mathbb{P} \left(A_{1} = 1-a_{1} \, | \, X_{1} \right) \\
+& \hspace{3.2cm} - \mathbb{E} \left[ Y^{*}(a_{1}, d^{opt}_{2}(a_{1})) \, \bigg| \, X_{1}, A_{1} = a_{1} \right] \mathbb{P} \left(A_{1} = a_{1} \, | \, X_{1} \right) \\
+& \hspace{3.2cm} - \mathbb{E} \left[ Y^{*}(a_{1}, d^{opt}_{2}(a_{1})) \, \bigg| \, X_{1}, A_{1} = 1 - a_{1} \right] \mathbb{P} \left(A_{1} = 1 - a_{1} \, | \, X_{1} \right) \bigg\} \\
+& \quad =  \mathbb{1}(d_{1}^{opt} \neq a_{1}) \,\, \bigg\{ 
+\mathbb{E}_{X_{2}} \left[ \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right]  \, \bigg| \, X_{1}, A_{1} = a_{1} \right]  \mathbb{P} \left(A_{1} = a_{1} \, | \, X_{1} \right) \\
+& \hspace{3.2cm} + \mathbb{E}_{X_{2}} \left[ \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  \, \bigg| \, X_{1}, A_{1} = 1 - a_{1}, X_{2} \right]  \, \bigg| \, X_{1}, A_{1} = 1 - a_{1} \right]  \mathbb{P} \left(A_{1} = 1 - a_{1} \, | \, X_{1} \right) \\
+& \hspace{3.2cm} - \mathbb{E}_{X_{2}} \left[ \mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right]  \, \bigg| \, X_{1}, A_{1} = a_{1} \right]  \mathbb{P} \left(A_{1} = a_{1} \, | \, X_{1} \right) \\
+& \hspace{3.2cm} - \mathbb{E}_{X_{2}} \left[ \mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  \, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2} \right]  \, \bigg| \, X_{1}, A_{1} = 1-a_{1} \right]  \mathbb{P} \left(A_{1} = 1-a_{1} \, | \, X_{1} \right) \bigg\}. \\
+\end{align*} 
+
+where $(a)$ uses the fact that $R_{1}=0$  if  $d_{1}^{opt}=a_{1}$, and $R_{1}>0$ if  $d_{1}^{opt} \neq a_{1}$. Now,  consider further expansion for conditional expectation on $Y$.
+
+\begin{align*}
+  & \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right] \\
+& \quad = \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = d_{2}^{opt}(a_{1})   \right]  
+\underbrace{\mathbb{P} \left(A_{2} = d_{2}^{opt}(a_{1}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right)}_{=: p_{1,a_{1}}} \\
+& \quad + \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1-d_{2}^{opt}(a_{1})   \right]  
+\mathbb{P} \left(A_{2} = 1-  d_{2}^{opt}(a_{1}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right) \\
+& \quad = \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = d_{2}^{opt}(a_{1})   \right]  p_{1,a_{1}} \\
+& \quad + \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1-d_{2}^{opt}(a_{1})   \right]  (1-p_{1,a_{1}}), \\
+  & \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  \, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2} \right] \\
+& \quad = \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = d_{2}^{opt}(1-a_{1})   \right]  
+\mathbb{P} \left(A_{2} = d_{2}^{opt}(1-a_{1}) \, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2} \right) \\
+& \quad + \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = 1-d_{2}^{opt}(1-a_{1})   \right]  
+\mathbb{P} \left(A_{2} = 1-  d_{2}^{opt}(1-a_{1}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right) \\
+& \quad = \mathbb{E}_{Y} \left[ Y
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = d_{2}^{opt}(1-a_{1})   \right]  
+\underbrace{\mathbb{P} \left(A_{2} = d_{2}^{opt}(1-a_{1}) \, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2} \right)}_{=: p_{1,1-a_{1}}} \\
+& \quad + \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = 1-d_{2}^{opt}(1-a_{1})   \right]  
+\mathbb{P} \left(A_{2} = 1-  d_{2}^{opt}(1-a_{1}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right) \\
+& \quad = \mathbb{E}_{Y} \left[ Y
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = d_{2}^{opt}(1-a_{1})   \right]  p_{1,1-a_{1}} \\
+& \quad + \mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = 1-d_{2}^{opt}(1-a_{1})   \right]  (1-p_{1,1-a_{1}}), \\
+  & \mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right] \\
+& \quad = \mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = d_{2}^{opt}(a_{1})   \right]  
+\mathbb{P} \left(A_{2} = d_{2}^{opt}(a_{1}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right) \\
+& \quad + \mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1- d_{2}^{opt}(a_{1})   \right]  
+\mathbb{P} \left(A_{2} = 1- d_{2}^{opt}(a_{1}) \, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2} \right) \\
+& \quad = \mathbb{E}_{Y} \left[ Y
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = d_{2}^{opt}(a_{1})   \right]  
+p_{1,a_{1}}  \\
+& \quad + \mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1- d_{2}^{opt}(a_{1})   \right]  
+(1-p_{1,a_{1}}), \\
+  & \mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  \, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2} \right] \\
+& \quad = \mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1- a_{1}, X_{2}, A_{2} = d_{2}^{opt}(1-a_{1})   \right]  
+p_{1,1-a_{1}} \\
+& \quad + \mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = 1- d_{2}^{opt}(1-a_{1})   \right]  
+(1-p_{1,1-a_{1}}).
+\end{align*} 
+
+
+Finally, with $p_{1} := \mathbb{P} \left(A_{1} = a_{1} \, | \, X_{1} \right)$, we have
+
+\begin{align*}
+& R_{1}(X_{1}, a_{1}) \\
+& \quad = \mathbb{1}(d_{1}^{opt} \neq a_{1}) \,\, \times \\
+& \hspace{1.2cm} \bigg\{ 
+(1-p_{1}) \cdot \mathbb{E} \left[ p_{1,1-a_{1}} \cdot 
+\mathbb{E} \left[ Y \bigg| X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = d_{2}^{opt}(1-a_{1})   \right]
+\bigg| X_{1}, A_{1} = 1-a_{1}  \right] \\
+& \hspace{2.0cm} - 
+p_{1} \cdot \mathbb{E} \left[ p_{1,a_{1}} \cdot 
+\mathbb{E} \left[ Y \bigg| X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = d_{2}^{opt}(a_{1})   \right]
+\bigg| X_{1}, A_{1} = a_{1}  \right]  \\
+& \hspace{2cm} + 
+p_{1} \cdot \mathbb{E} \left[ p_{1,a_{1}} \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = d_{2}^{opt}(a_{1})   \right] 
+\bigg| X_{1}, A_{1} = a_{1}  \right]  \\
+& \hspace{2cm} + 
+p_{1} \cdot \mathbb{E} \left[ (1-p_{1,a_{1}}) \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1-d_{2}^{opt}(a_{1})   \right]
+\bigg| X_{1}, A_{1} = a_{1}  \right]  \\
+& \hspace{2cm} -
+p_{1} \cdot \mathbb{E} \left[ (1-p_{1,a_{1}}) \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1- d_{2}^{opt}(a_{1})   \right]  
+\bigg| X_{1}, A_{1} = a_{1}  \right]  \\
+& \hspace{1cm} +
+(1-p_{1}) \cdot \mathbb{E} \left[ (1-p_{1,1-a_{1}}) \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = 1-d_{2}^{opt}(1-a_{1})   \right]
+\bigg| X_{1}, A_{1} = 1-a_{1}  \right] \\
+& \hspace{1cm} -
+(1-p_{1}) \cdot \mathbb{E} \left[ p_{1,1-a_{1}} \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1- a_{1}, X_{2}, A_{2} = d_{2}^{opt}(1-a_{1})   \right]  
+\bigg| X_{1}, A_{1} = 1-a_{1}  \right] \\
+& \hspace{1cm} -
+(1-p_{1}) \cdot \mathbb{E} \left[ (1-p_{1,1-a_{1}}) \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = 1- d_{2}^{opt}(1-a_{1})   \right]  
+\bigg| X_{1}, A_{1} = 1-a_{1}  \right] \bigg\}. \\
+  & \quad = \mathbb{1}(d_{1}^{opt} \neq a_{1}) \,\, \times \\
+& \hspace{1.2cm} \bigg\{ D + 
+p_{1} \cdot \mathbb{E} \left[ p_{1,a_{1}} \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = d_{2}^{opt}(a_{1})   \right] 
+\bigg| X_{1}, A_{1} = a_{1}  \right]  \\
+& \hspace{2cm} + 
+p_{1} \cdot \mathbb{E} \left[ (1-p_{1,a_{1}}) \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1-d_{2}^{opt}(a_{1})   \right]
+\bigg| X_{1}, A_{1} = a_{1}  \right]  \\
+& \hspace{2cm} -
+p_{1} \cdot \mathbb{E} \left[ (1-p_{1,a_{1}}) \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = 1- d_{2}^{opt}(a_{1})   \right]  
+\bigg| X_{1}, A_{1} = a_{1}  \right]  \\
+& \hspace{1cm} +
+(1-p_{1}) \cdot \mathbb{E} \left[ (1-p_{1,1-a_{1}}) \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(1-a_{1}, d_{2}^{opt}(1-a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = 1-d_{2}^{opt}(1-a_{1})   \right]
+\bigg| X_{1}, A_{1} = 1-a_{1}  \right] \\
+& \hspace{1cm} -
+(1-p_{1}) \cdot \mathbb{E} \left[ p_{1,1-a_{1}} \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1- a_{1}, X_{2}, A_{2} = d_{2}^{opt}(1-a_{1})   \right]  
+\bigg| X_{1}, A_{1} = 1-a_{1}  \right] \\
+& \hspace{1cm} -
+(1-p_{1}) \cdot \mathbb{E} \left[ (1-p_{1,1-a_{1}}) \cdot 
+\mathbb{E}_{Y} \left[ Y^{*}(a_{1}, d_{2}^{opt}(a_{1}))  
+\, \bigg| \, X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = 1- d_{2}^{opt}(1-a_{1})   \right]  
+\bigg| X_{1}, A_{1} = 1-a_{1}  \right] \bigg\}. \\
+\end{align*} 
+
+where $D := (1-p_{1}) \cdot \mathbb{E} \left[ p_{1,1-a_{1}} \cdot \mathbb{E} \left[ Y \bigg| X_{1}, A_{1} = 1-a_{1}, X_{2}, A_{2} = d_{2}^{opt}(1-a_{1})   \right] \bigg| X_{1}, A_{1} = 1-a_{1}  \right] - p_{1} \cdot \mathbb{E} \left[ p_{1,a_{1}} \cdot  \mathbb{E} \left[ Y \bigg| X_{1}, A_{1} = a_{1}, X_{2}, A_{2} = d_{2}^{opt}(a_{1})   \right] \bigg| X_{1}, A_{1} = a_{1}  \right]$.
+
+Therefore, $R_{1} \in \left[ \max(0 \,, \, D + (Y_{L} - Y_{U}) + p_{1} \cdot p_{1, a_{1}} \cdot Y_{U} +  (1-p_{1}) \cdot p_{1, 1-a_{1}} \cdot Y_{L} )  \, , \, D + (Y_{U} - Y_{L}) + p_{1} \cdot p_{1, a_{1}} \cdot Y_{L} -  (1-p_{1}) \cdot p_{1, 1-a_{1}} \cdot Y_{U} \right]$ is the possible range of values in the regret at time $1$ in the presence of unmeasured confounder. 
+
+
+---
+
+### Reference
+
+[Causal inference lecture notes](https://amy-cochran.gitbook.io/causal-inference/introduction/start-here)
+
+[Schulte, P. J., Tsiatis, A. A., Laber, E. B., & Davidian, M. (2014). Q-and A-learning methods for estimating optimal dynamic treatment regimes. Statistical science: a review journal of the Institute of Mathematical Statistics, 29(4), 640.](https://pubmed.ncbi.nlm.nih.gov/25620840/)
+
+[Hernán, M. A., & Robins, J. M. (2010). Causal Inference: What if. Boca Raton: Chapman & Hall/CRC.](https://cdn1.sph.harvard.edu/wp-content/uploads/sites/1268/2021/03/ciwhatif_hernanrobins_30mar21.pdf)
+
+[Murphy, S. A. (2003). Optimal dynamic treatment regimes. Journal of the Royal Statistical Society: Series B (Statistical Methodology), 65(2), 331-355.](https://rss.onlinelibrary.wiley.com/doi/epdf/10.1111/1467-9868.00389)
+
