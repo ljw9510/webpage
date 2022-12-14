@@ -25,6 +25,7 @@ links:
 <p><a href="#estimation">5. Estimation of Potential Outcome</a></p>
 <p><a href="#simulation">6. Simlation Studies</a></p>
 <p><a href="#sensitivity">7. Sensitivity Analysis</a></p>
+<p><a href="#summary">8. Summary</a></p>
 <hr />
 </div>
 <div id="overview" class="section level3">
@@ -708,6 +709,14 @@ p_{1} \cdot \mathbb{E} \left[ (1-p_{1,a_{1}}) \cdot
 <p>Therefore, <span class="math inline">\(R_{1} \in \left[ \max(0 \,, \, D + (Y_{L} - Y_{U}) + p_{1} \cdot p_{1, a_{1}} \cdot Y_{U} + (1-p_{1}) \cdot p_{1, 1-a_{1}} \cdot Y_{L} ) \, , \, D + (Y_{U} - Y_{L}) + p_{1} \cdot p_{1, a_{1}} \cdot Y_{L} - (1-p_{1}) \cdot p_{1, 1-a_{1}} \cdot Y_{U} \right]\)</span> is the possible range of values in the regret at time <span class="math inline">\(1\)</span> in the presence of unmeasured confounder.</p>
 <hr />
 </div>
+</div>
+<div id="summary" class="section level3">
+<h3>Summary</h3>
+<p>In summary, we reviewed a paper <em>Q- and A-learning Methods for Estimating Optimal Dynamic Treatment Regimes</em>, focusing on Q-learning methods. The goal of the paper is to make a series of optimal treatment decisions to achieve the best outcome for an individual patient, called a <em>dynamic treatment regime</em>. To estimate the optimal treatment regime, the Q-learning method uses recursive algorithms: we decide to maximize the expected potential <em>final</em> outcome and then decide on a previous stage under the subsequent optimal rules in a backward induction manner up to the first stage. Q-learning is based on “Q-functions” to estimate the expected potential outcome of a series of treatments which measures the ‘quality’ associated with the treatment. Then estimation of the optimal treatment rule is accomplished via direct modeling of Q-functions such as ordinary least squares.</p>
+<p>Throughout the project, we identified the expected potential outcome as a statistical estimand, a function of conditional expectation, and estimated the quantity under Q-functions and inverse probability weighting. From the simulation study, the estimated treatment rule showed 95% prediction accuracy. However, the Q-learning approach yields a poor estimation of true parameters which affect decision rules due to misspecified Q-functions. As can be seen in the simulation study, the performance of the Q-learning approach is affected by model specification, which may result in poor estimation.</p>
+<p>One possible approach to overcome the model specification issue is to use a robust approach that may not need any model assumption based on non-parametric inference. More specifically, we may use distance measures between the identified empirical distribution of the covariates and the weighted empirical distribution of covariates with inverse probability weighting of certain treatment groups. Without any further model assumption, we can find a weighting function that directly minimizes the distance between them.</p>
+<p>This project is expected to contribute to understanding dynamic treatment regimes in the Q-learning framework. Anyone interested in how to identify and estimate causal estimands in longitudinal settings may find this helpful.</p>
+<hr />
 </div>
 <div id="reference" class="section level3">
 <h3>Reference</h3>
